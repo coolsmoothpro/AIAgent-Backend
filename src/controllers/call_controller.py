@@ -27,6 +27,8 @@ OPEN_AI_URL = 'https://api.openai.com'
 call_queue = [] 
 is_calling = False
 current_call_sid = None
+call_logs = {}
+
 
 agent = Blueprint("agent", __name__)
 
@@ -96,6 +98,8 @@ def process_high_volume_calls():
 @agent.route('/add_to_queue', methods=['POST'])
 def add_to_queue():
     """Adds a phone number to the dialer queue."""
+    global call_queue
+    
     data = request.json
     if "phone" in data:
         phone_number = "+" + str(data["phone"]["countryCode"]) + str(data["phone"]["areaCode"]) + str(data["phone"]["phoneNumber"])
@@ -135,7 +139,7 @@ def dialer_loop():
 
 @agent.route('/start_dialer', methods=['POST'])
 def start_dialer():
-
+    
     # Start the dialer in a background thread
     dialer_thread = threading.Thread(target=dialer_loop)
     dialer_thread.start()
@@ -154,15 +158,28 @@ def dialer_prompt():
 def call_status_update():
     """Handles call status updates from Twilio."""
     global is_calling, current_call_sid
+    
     call_sid = request.form.get('CallSid')
     call_status = request.form.get('CallStatus')
+    to_number = request.form.get('To')
+    from_number = request.form.get('From')
+    timestamp = request.form.get('Timestamp', None)
+    
     print(f"Received status update: {call_status} for call SID: {call_sid}")
 
+    # Update the current call state
     if call_sid == current_call_sid:
         if call_status in ['completed', 'failed', 'no-answer', 'busy']:
-            # Reset calling state to allow the next call in the queue
             is_calling = False
             current_call_sid = None
+    
+    # Log the call status for record-keeping
+    call_logs[call_sid] = {
+        "status": call_status,
+        "to": to_number,
+        "from": from_number,
+        "timestamp": timestamp,
+    }
 
     return '', 200
 
