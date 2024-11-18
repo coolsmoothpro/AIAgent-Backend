@@ -57,7 +57,7 @@ def aiagent_call():
         to_number = "+" + str(data["phone"]["countryCode"]) + str(data["phone"]["areaCode"]) + str(data["phone"]["phoneNumber"])
         prompt = data["prompt"]
         answer = generate_prompt(prompt)
-
+        print(to_number)
         try:
             call = client.calls.create(
                 twiml=f"<Response><Say>{answer}</Say></Response>",
