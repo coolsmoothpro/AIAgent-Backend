@@ -1,0 +1,437 @@
+{
+	"accounts": [
+		{
+			"name": "Plaid Checking",
+			"type": "depository",
+			"subtype": "checking",
+			"current_balance": 110.0,
+			"currency": "USD"
+		},
+		{
+			"name": "Plaid Saving",
+			"type": "depository",
+			"subtype": "savings",
+			"current_balance": 210.0,
+			"currency": "USD"
+		},
+		{
+			"name": "Plaid CD",
+			"type": "depository",
+			"subtype": "cd",
+			"current_balance": 1000.0,
+			"currency": "USD"
+		},
+		{
+			"name": "Plaid Credit Card",
+			"type": "credit",
+			"subtype": "credit card",
+			"current_balance": 410.0,
+			"currency": "USD"
+		},
+		{
+			"name": "Plaid Money Market",
+			"type": "depository",
+			"subtype": "money market",
+			"current_balance": 43200.0,
+			"currency": "USD"
+		}
+	],
+	"transactions": {
+		"added": [
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-11-03",
+				"description": "Uber",
+				"amount": 6.33,
+				"category": ["Travel", "Taxi"],
+				"transaction_id": "NxRoWNRJmMc3Q637byl4C7xD4kZyQ9Iy8aNBz"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-10-21",
+				"description": "Uber",
+				"amount": 5.4,
+				"category": ["Travel", "Taxi"],
+				"transaction_id": "Pab8GWbJ9jTA4VAjyW9PtlwjPvdNEeCoLjmBb"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-10-19",
+				"description": "United Airlines",
+				"amount": -500.0,
+				"category": ["Travel", "Airlines and Aviation Services"],
+				"transaction_id": "jqbjo5bv1kI6EP6ZvwpgtybPWGEwopC6K9bzo"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-10-18",
+				"description": "McDonald's",
+				"amount": 12.0,
+				"category": ["Food and Drink", "Restaurants", "Fast Food"],
+				"transaction_id": "7Mp6rbpodLhe3de14D9xC9pRxar76Dudb3VAN"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-10-18",
+				"description": "Starbucks",
+				"amount": 4.33,
+				"category": ["Food and Drink", "Restaurants", "Coffee Shop"],
+				"transaction_id": "ekvdZXvL7ySXeaXLVZv9FdaDXr3K9BcrvPnRL"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-10-17",
+				"description": "FUN",
+				"amount": 89.4,
+				"category": ["Food and Drink", "Restaurants"],
+				"transaction_id": "Q4JEnMJlv7ikKlkzXR9ju9ndj3oPQGuwPBA4w"
+			},
+			{
+				"account_id": "6ZgRK6gpxLf4mr47aEkpIbZdDK3r3kC8ANoB4",
+				"date": "2024-10-21",
+				"description": "None",
+				"amount": 25.0,
+				"category": ["Payment", "Credit Card"],
+				"transaction_id": "Z1qv3Mqarphg8PgLV69oiRAbgdLKyMteaWkAJ"
+			},
+			{
+				"account_id": "6ZgRK6gpxLf4mr47aEkpIbZdDK3r3kC8ANoB4",
+				"date": "2024-10-16",
+				"description": "None",
+				"amount": -4.22,
+				"category": ["Transfer", "Payroll"],
+				"transaction_id": "M37pk47JbRTKEDK1wQMaFwRNayxqe3fLXkZwe"
+			},
+			{
+				"account_id": "XZ8ykG8xqQfwznw5GD4Li6pEP1575LfblVWm3",
+				"date": "2024-10-20",
+				"description": "None",
+				"amount": 1000.0,
+				"category": ["Transfer", "Deposit"],
+				"transaction_id": "1klbnVlQKLSVGkV1zEJauXGBrAjp94Fp9VvLm"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-11-05",
+				"description": "United Airlines",
+				"amount": 500.0,
+				"category": ["Travel", "Airlines and Aviation Services"],
+				"transaction_id": "LBVL8aVJnQuAJ9AVGzmdtkMPda8NW7Hk6Bzvo"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-10-31",
+				"description": "None",
+				"amount": 500.0,
+				"category": ["Food and Drink", "Restaurants"],
+				"transaction_id": "px51GD5vElcv7Dvl8XWPUxzm5yZKoGCplemyb"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-10-30",
+				"description": "None",
+				"amount": 500.0,
+				"category": ["Shops", "Sporting Goods"],
+				"transaction_id": "o35MAD5v8WTaz1ax8g6Ribr1NjdBG3foQAwxv"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-10-30",
+				"description": "KFC",
+				"amount": 500.0,
+				"category": ["Food and Drink", "Restaurants", "Fast Food"],
+				"transaction_id": "gyb41XboQNCm3bmWV7PRtVb6mGoZ8WcEN9ka9"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-10-30",
+				"description": "None",
+				"amount": 2078.5,
+				"category": ["Payment"],
+				"transaction_id": "81plzmpgavhEpnEgN18WideWvbJK5McW75E4e"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-10-19",
+				"description": "None",
+				"amount": 78.5,
+				"category": ["Recreation", "Gyms and Fitness Centers"],
+				"transaction_id": "Ey9jZK9JonCvlVvXa1mqUyweqaBgvkC48zdvd"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-10-06",
+				"description": "United Airlines",
+				"amount": 500.0,
+				"category": ["Travel", "Airlines and Aviation Services"],
+				"transaction_id": "WQRmrMR3lpU7gv7PXVa1iBd51KAwznF63xaAA"
+			},
+			{
+				"account_id": "VeWbKLWBVwcB1xBzqVdMiX7vGqRyRWc9Ax8Be",
+				"date": "2024-10-20",
+				"description": "None",
+				"amount": 5850.0,
+				"category": ["Transfer", "Debit"],
+				"transaction_id": "AGnajVnJM4sbV4bGlk3zt8E6yQwabrt9LMeKb"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-10-04",
+				"description": "Uber",
+				"amount": 6.33,
+				"category": ["Travel", "Taxi"],
+				"transaction_id": "qdRLnDRvWqiGB6Glv5a9ueyXpV1QJGHgPo7xA"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-09-21",
+				"description": "Uber",
+				"amount": 5.4,
+				"category": ["Travel", "Taxi"],
+				"transaction_id": "Kzn1gdnJGyCdXWd9VgQxSyv45aDNPefRknAJl"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-09-19",
+				"description": "United Airlines",
+				"amount": -500.0,
+				"category": ["Travel", "Airlines and Aviation Services"],
+				"transaction_id": "raJpbDJvAKT5km5WVRNKubLyJPEA79i79o6m3"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-09-18",
+				"description": "McDonald's",
+				"amount": 12.0,
+				"category": ["Food and Drink", "Restaurants", "Fast Food"],
+				"transaction_id": "zZmk3rmvRAfAaLAGQepEteNzlPAMgdHlBqLjk"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-09-18",
+				"description": "Starbucks",
+				"amount": 4.33,
+				"category": ["Food and Drink", "Restaurants", "Coffee Shop"],
+				"transaction_id": "BnR47ZRJ1vcRowRXDnxGhBrALXNoGxi45Z8ae"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-09-17",
+				"description": "FUN",
+				"amount": 89.4,
+				"category": ["Food and Drink", "Restaurants"],
+				"transaction_id": "37KymbKMzLT9gj9p3AJou3KAQlwDPBFZbPn59"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-09-04",
+				"description": "Uber",
+				"amount": 6.33,
+				"category": ["Travel", "Taxi"],
+				"transaction_id": "xerAzqrv9RcgrygkZ8p6iMjKW7eGmxu6PNVLx"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-08-22",
+				"description": "Uber",
+				"amount": 5.4,
+				"category": ["Travel", "Taxi"],
+				"transaction_id": "dnwxQXw1jNcMAeMLVZayF9erwljzyxiJzGQr7"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-08-20",
+				"description": "United Airlines",
+				"amount": -500.0,
+				"category": ["Travel", "Airlines and Aviation Services"],
+				"transaction_id": "aWezjXeQ4PTkX4kbV63nuoElJABR8ysZJPQVz"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-08-19",
+				"description": "McDonald's",
+				"amount": 12.0,
+				"category": ["Food and Drink", "Restaurants", "Fast Food"],
+				"transaction_id": "4er9lbr1BpcgV9gmXDnLim3kWbgV7aTJVkA4w"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-08-19",
+				"description": "Starbucks",
+				"amount": 4.33,
+				"category": ["Food and Drink", "Restaurants", "Coffee Shop"],
+				"transaction_id": "NxRoWNRJmMc3Q637byl4C7xo5MqVD9uypx5km"
+			},
+			{
+				"account_id": "RN8WbM8qkZcDvaDyojz7s5goEPMLMbTa1DvgD",
+				"date": "2024-08-18",
+				"description": "FUN",
+				"amount": 89.4,
+				"category": ["Food and Drink", "Restaurants"],
+				"transaction_id": "Pab8GWbJ9jTA4VAjyW9Ptlwb5B9Ljeio5JWVW"
+			},
+			{
+				"account_id": "6ZgRK6gpxLf4mr47aEkpIbZdDK3r3kC8ANoB4",
+				"date": "2024-09-21",
+				"description": "None",
+				"amount": 25.0,
+				"category": ["Payment", "Credit Card"],
+				"transaction_id": "ekvdZXvL7ySXeaXLVZv9FdavqG4VDBirBE5e3"
+			},
+			{
+				"account_id": "6ZgRK6gpxLf4mr47aEkpIbZdDK3r3kC8ANoB4",
+				"date": "2024-09-16",
+				"description": "None",
+				"amount": -4.22,
+				"category": ["Transfer", "Payroll"],
+				"transaction_id": "qdRLnDRvWqiGB6Glv5a9ueyXpV1QJGHgPo7Bl"
+			},
+			{
+				"account_id": "6ZgRK6gpxLf4mr47aEkpIbZdDK3r3kC8ANoB4",
+				"date": "2024-08-22",
+				"description": "None",
+				"amount": 25.0,
+				"category": ["Payment", "Credit Card"],
+				"transaction_id": "Kzn1gdnJGyCdXWd9VgQxSyv45aDNPefRknArk"
+			},
+			{
+				"account_id": "6ZgRK6gpxLf4mr47aEkpIbZdDK3r3kC8ANoB4",
+				"date": "2024-08-17",
+				"description": "None",
+				"amount": -4.22,
+				"category": ["Transfer", "Payroll"],
+				"transaction_id": "raJpbDJvAKT5km5WVRNKubLyJPEA79i79o6NJ"
+			},
+			{
+				"account_id": "XZ8ykG8xqQfwznw5GD4Li6pEP1575LfblVWm3",
+				"date": "2024-09-20",
+				"description": "None",
+				"amount": 1000.0,
+				"category": ["Transfer", "Deposit"],
+				"transaction_id": "BnR47ZRJ1vcRowRXDnxGhBrALXNoGxi45Z8Vb"
+			},
+			{
+				"account_id": "XZ8ykG8xqQfwznw5GD4Li6pEP1575LfblVWm3",
+				"date": "2024-08-21",
+				"description": "None",
+				"amount": 1000.0,
+				"category": ["Transfer", "Deposit"],
+				"transaction_id": "37KymbKMzLT9gj9p3AJou3KAQlwDPBFZbPn5a"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-10-01",
+				"description": "None",
+				"amount": 500.0,
+				"category": ["Food and Drink", "Restaurants"],
+				"transaction_id": "7Mp6rbpodLhe3de14D9xC9pz8wJ3RDidyjnrq"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-09-30",
+				"description": "None",
+				"amount": 500.0,
+				"category": ["Shops", "Sporting Goods"],
+				"transaction_id": "ekvdZXvL7ySXeaXLVZv9FdavqG4VDBirBE5eX"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-09-30",
+				"description": "KFC",
+				"amount": 500.0,
+				"category": ["Food and Drink", "Restaurants", "Fast Food"],
+				"transaction_id": "Q4JEnMJlv7ikKlkzXR9ju9nBDa56dGiw6z7RL"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-09-30",
+				"description": "None",
+				"amount": 2078.5,
+				"category": ["Payment"],
+				"transaction_id": "Z1qv3Mqarphg8PgLV69oiRAVpxBwbMuemzX9n"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-09-19",
+				"description": "None",
+				"amount": 78.5,
+				"category": ["Recreation", "Gyms and Fitness Centers"],
+				"transaction_id": "M37pk47JbRTKEDK1wQMaFwR98J1QN3FLpzPGD"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-09-06",
+				"description": "United Airlines",
+				"amount": 500.0,
+				"category": ["Travel", "Airlines and Aviation Services"],
+				"transaction_id": "1klbnVlQKLSVGkV1zEJauXG5gmQRB4fpX3eE5"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-09-01",
+				"description": "None",
+				"amount": 500.0,
+				"category": ["Food and Drink", "Restaurants"],
+				"transaction_id": "LBVL8aVJnQuAJ9AVGzmdtkMbgAGlP7CkKopdk"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-08-31",
+				"description": "None",
+				"amount": 500.0,
+				"category": ["Shops", "Sporting Goods"],
+				"transaction_id": "px51GD5vElcv7Dvl8XWPUxzbLrlgmGfpjkV8J"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-08-31",
+				"description": "KFC",
+				"amount": 500.0,
+				"category": ["Food and Drink", "Restaurants", "Fast Food"],
+				"transaction_id": "o35MAD5v8WTaz1ax8g6RibrLZM8g13io5r7Gk"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-08-31",
+				"description": "None",
+				"amount": 2078.5,
+				"category": ["Payment"],
+				"transaction_id": "gyb41XboQNCm3bmWV7PRtVbyR9vz6WcERrndM"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-08-20",
+				"description": "None",
+				"amount": 78.5,
+				"category": ["Recreation", "Gyms and Fitness Centers"],
+				"transaction_id": "81plzmpgavhEpnEgN18Widejwk9pWMiWpzLez"
+			},
+			{
+				"account_id": "Dm8PQq8Jp4u19B1g4zmlFvKRWo8q8Xi3pVP5B",
+				"date": "2024-08-07",
+				"description": "United Airlines",
+				"amount": 500.0,
+				"category": ["Travel", "Airlines and Aviation Services"],
+				"transaction_id": "Ey9jZK9JonCvlVvXa1mqUywZ5m1Eekf4eVk3r"
+			},
+			{
+				"account_id": "VeWbKLWBVwcB1xBzqVdMiX7vGqRyRWc9Ax8Be",
+				"date": "2024-09-20",
+				"description": "None",
+				"amount": 5850.0,
+				"category": ["Transfer", "Debit"],
+				"transaction_id": "AGnajVnJM4sbV4bGlk3zt8EAKleV6rt9JyA3M"
+			},
+			{
+				"account_id": "VeWbKLWBVwcB1xBzqVdMiX7vGqRyRWc9Ax8Be",
+				"date": "2024-08-21",
+				"description": "None",
+				"amount": 5850.0,
+				"category": ["Transfer", "Debit"],
+				"transaction_id": "GlQe1zQJ8RfwmVwgd4Pri8qKDMovm7t6x8PRR"
+			}
+		],
+		"modified": [],
+		"removed": []
+	}
+}
