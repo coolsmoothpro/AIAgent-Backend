@@ -28,6 +28,7 @@ call_queue = []
 is_calling = False
 current_call_sid = None
 call_logs = {}
+power_dialer_prompt = ""
 
 
 agent = Blueprint("agent", __name__)
@@ -106,14 +107,17 @@ def add_to_queue():
         call_queue.append(phone_number)
         print(call_queue)
 
-        return jsonify({"status": "Added to queue", "phone_number": phone_number})
+        return jsonify({"status": "success", "message": "Added the phone number", "phone_number": phone_number})
         
-    return jsonify({"status": "Failed", "reason": "No phone number provided"}), 400
+    return jsonify({"status": "Failed", "message": "No phone number provided"}), 400
 
 
 def initiate_call(to_number):
     """Initiates a call and plays a TwiML prompt."""
-    global current_call_sid, is_calling
+    global current_call_sid, is_calling, power_dialer_prompt
+
+    answer = generate_prompt(power_dialer_prompt)
+
     is_calling = True
 
     status_callback_url = "http://159.223.165.147:5555/api/v1/agent/call_status_update" 
@@ -121,7 +125,7 @@ def initiate_call(to_number):
     call = client.calls.create(
         to=to_number,
         from_=TWILIO_PHONE_NUMBER,
-        twiml=f"<Response><Say>Hello, this is an automated call. Please stay on the line for further assistance.</Say></Response>",
+        twiml=f"<Response><Say>{power_dialer_prompt}</Say><Say>{answer}</Say></Response>",
         status_callback=status_callback_url,  # Set the callback URL
         status_callback_event=['completed', 'failed', 'no-answer', 'busy'],
     )
@@ -144,11 +148,21 @@ def dialer_loop():
 
 @agent.route('/start_dialer', methods=['POST'])
 def start_dialer():
-    
-    # Start the dialer in a background thread
-    dialer_thread = threading.Thread(target=dialer_loop)
-    dialer_thread.start()
-    return jsonify({"status": "Dialer started"})
+    global power_dialer_prompt
+
+    data = request.json
+    power_dialer_prompt = data["prompt"]
+
+    try:
+        if len(call_queue) <=0:
+            return jsonify({"status": "failed", "message": "Dialer failed"})
+        else:
+            dialer_thread = threading.Thread(target=dialer_loop)
+            dialer_thread.start()
+            return jsonify({"status": "success", "message": "Dialer started"})
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({"status": "failed", "message": "Dialer failed"})
 
 
 @agent.route('/api/v1/dialer/prompt', methods=['GET', 'POST'])
