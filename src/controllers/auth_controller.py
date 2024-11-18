@@ -95,7 +95,7 @@ def handle_signup():
 
                 db.session.add(user_obj)
                 db.session.commit()
- 
+
                 payload = {
                     'iat': datetime.now(timezone.utc),
                     'exp': datetime.now(timezone.utc) + timedelta(days=7),
