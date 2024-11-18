@@ -99,7 +99,7 @@ def process_high_volume_calls():
 def add_to_queue():
     """Adds a phone number to the dialer queue."""
     global call_queue
-    
+
     data = request.json
     if "phone" in data:
         phone_number = "+" + str(data["phone"]["countryCode"]) + str(data["phone"]["areaCode"]) + str(data["phone"]["phoneNumber"])
@@ -115,10 +115,15 @@ def initiate_call(to_number):
     """Initiates a call and plays a TwiML prompt."""
     global current_call_sid, is_calling
     is_calling = True
+
+    status_callback_url = "http://159.223.165.147:5555/api/v1/agent/call_status_update" 
+
     call = client.calls.create(
         to=to_number,
         from_=TWILIO_PHONE_NUMBER,
         twiml=f"<Response><Say>Hello, this is an automated call. Please stay on the line for further assistance.</Say></Response>",
+        status_callback=status_callback_url,  # Set the callback URL
+        status_callback_event=['completed', 'failed', 'no-answer', 'busy'],
     )
     current_call_sid = call.sid
     print(f"Call initiated with SID: {call.sid}")
