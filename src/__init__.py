@@ -12,7 +12,17 @@ load_dotenv()
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+app = Flask(__name__, static_folder='../static/build', template_folder='templates')
+
 CORS(app)
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory('../static/build', 'index.html')
 
 if os.environ.get("APP_ENV") == 'development':
     config = Config().dev_config
