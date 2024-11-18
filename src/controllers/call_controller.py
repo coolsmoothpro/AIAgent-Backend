@@ -60,10 +60,9 @@ def aiagent_call():
         print(to_number)
         try:
             call = client.calls.create(
-                twiml=f"<Response><Say>{answer}</Say></Response>",
                 to=to_number,
                 from_=TWILIO_PHONE_NUMBER,
-                # url="http://127.0.0.1:5555/api/v1/agent/outbound-prompt"
+                url="http://159.223.165.147:5555/api/v1/agent/outbound-prompt"
             )            
         
             print(call.sid)
