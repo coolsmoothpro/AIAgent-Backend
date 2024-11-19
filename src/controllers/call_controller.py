@@ -62,11 +62,11 @@ def generate_audio_with_deepgram(prompt):
 
     if response.status_code == 200:
         # Save audio to file
-        if not os.path.exists('static/audio'):
-            os.makedirs('static/audio')
+        if not os.path.exists('static/build/audio'):
+            os.makedirs('static/build/audio')
 
         audio_filename = f"{prompt[:10].replace(' ', '_')}.mp3"
-        audio_path = os.path.join('static/audio', audio_filename)
+        audio_path = os.path.join('static/build/audio', audio_filename)
 
         with open(audio_path, "wb") as audio_file:
             audio_file.write(response.content)
@@ -93,8 +93,9 @@ def aiagent_call():
 
         # Upload audio file to public storage (example: AWS S3 or similar)
         # For demo, we'll assume the audio is accessible via a public URL
-        # public_audio_url = f"http://159.223.165.147:5555/static/audio/{audio_filename}"
-        public_audio_url = f"https://demo.twilio.com/docs/classic.mp3"
+        public_audio_url = f"http://159.223.165.147:5555/build/audio/{audio_filename}"
+        # public_audio_url = f"https://demo.twilio.com/docs/classic.mp3"
+
         print('here', public_audio_url)
         try:
             call = client.calls.create(
