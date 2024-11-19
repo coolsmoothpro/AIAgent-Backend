@@ -25,6 +25,9 @@ def serve(path):
     else:
         return send_from_directory('../static/build', 'index.html')
 
+app.config['UPLOAD_FOLDER'] = 'static/audio'
+
+
 if os.environ.get("APP_ENV") == 'development':
     config = Config().dev_config
 else:

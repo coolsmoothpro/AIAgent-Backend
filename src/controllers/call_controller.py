@@ -20,6 +20,10 @@ TWILIO_SID = os.environ.get("TWILIO_SID")
 TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
 TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER")
 
+DEEPGRAM_API_KEY = os.environ.get("DEEPGRAM_API_KEY")
+DEEPGRAM_TTS_URL = "https://api.deepgram.com/v1/speak?model=aura-asteria-en"
+
+
 client = Client(TWILIO_SID, TWILIO_AUTH_TOKEN)
 
 OPEN_AI_URL = 'https://api.openai.com'
@@ -46,6 +50,31 @@ def incoming_call():
 
     return str(response)
 
+def generate_audio_with_deepgram(prompt):
+    headers = {
+        "Authorization": f"Token fadd4b042e1e555ead4daba7a7c11761b27d64b1",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "text": prompt,
+    }
+    response = requests.post(DEEPGRAM_TTS_URL, headers=headers, json=data)
+
+    if response.status_code == 200:
+        # Save audio to file
+        if not os.path.exists('static/audio'):
+            os.makedirs('static/audio')
+
+        audio_filename = f"{prompt[:10].replace(' ', '_')}.mp3"
+        audio_path = os.path.join('static/audio', audio_filename)
+
+        with open(audio_path, "wb") as audio_file:
+            audio_file.write(response.content)
+
+        return audio_filename  
+    else:
+        print("Error generating audio:", response.json())
+        return None
 
 # Route to make outbound call
 @agent.route("/aiagent-call", methods=["POST"])
@@ -55,10 +84,21 @@ def aiagent_call():
         to_number = "+" + str(data["phone"]["countryCode"]) + str(data["phone"]["areaCode"]) + str(data["phone"]["phoneNumber"])
         prompt = data["prompt"]
         answer = generate_prompt(prompt)
-        print(to_number)
+
+        # Generate audio with Deepgram
+        audio_filename = generate_audio_with_deepgram(answer)
+  
+        if not audio_filename  :
+            return jsonify({"status": "Call Failed", "reason": "Audio generation failed"}), 500
+
+        # Upload audio file to public storage (example: AWS S3 or similar)
+        # For demo, we'll assume the audio is accessible via a public URL
+        public_audio_url = f"http://159.223.165.147:5555/static/audio/{audio_filename}"
+        print('here', public_audio_url)
         try:
             call = client.calls.create(
-                twiml=f"<Response><Say>{prompt}</Say><Say>{answer}</Say></Response>",
+                # twiml=f"<Response><Say>{prompt}</Say><Say>{answer}</Say></Response>",
+                twiml=f'<Response><Play>{public_audio_url}</Play></Response>',
                 to=to_number,
                 from_=TWILIO_PHONE_NUMBER,
                 # url="http://159.223.165.147:5555/api/v1/agent/outbound-prompt"
