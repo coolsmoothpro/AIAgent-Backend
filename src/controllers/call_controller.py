@@ -52,7 +52,7 @@ def incoming_call():
 
 def generate_audio_with_deepgram(prompt):
     headers = {
-        "Authorization": f"Token fadd4b042e1e555ead4daba7a7c11761b27d64b1",
+        "Authorization": f"Token {DEEPGRAM_API_KEY}",
         "Content-Type": "application/json"
     }
     data = {
@@ -93,7 +93,8 @@ def aiagent_call():
 
         # Upload audio file to public storage (example: AWS S3 or similar)
         # For demo, we'll assume the audio is accessible via a public URL
-        public_audio_url = f"http://159.223.165.147:5555/static/audio/{audio_filename}"
+        # public_audio_url = f"http://159.223.165.147:5555/static/audio/{audio_filename}"
+        public_audio_url = f"https://demo.twilio.com/docs/classic.mp3"
         print('here', public_audio_url)
         try:
             call = client.calls.create(
