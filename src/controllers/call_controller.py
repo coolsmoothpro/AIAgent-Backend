@@ -7,6 +7,7 @@ from twilio.twiml.voice_response import VoiceResponse
 from celery import Celery
 import time
 import threading
+import re
 
 
 # # Setup Celery for async tasks
@@ -104,6 +105,41 @@ def aiagent_call():
                 to=to_number,
                 from_=TWILIO_PHONE_NUMBER,
                 # url="http://159.223.165.147:5555/api/v1/agent/outbound-prompt"
+            )            
+        
+            print(call.sid)
+            
+            return jsonify({"status": "Call initiated", "call_sid": call.sid})
+
+        except:
+            return jsonify({"status": "This is a Trial account. You cannot call unverifed phone number!"})
+
+    return jsonify({"status": "Call Failed", "reason": "No phone number provided"}), 400
+
+
+# Route to make outbound call
+@agent.route("/aiwelcome-call", methods=["POST"])
+def aiwelcome_call():
+    data = request.json
+    if "phone" in data and "fullname" in data:
+        country_code = re.match(r"\+\d+", data["phone"]).group()
+        to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
+        fullname = data["fullname"]
+        answer = f"Hello, {fullname}, Welcome to LeadGoblin! I am Alyse, your personalized AI assistant, designed to make your life easier by handling everything from answering questions and managing schedules to offering smart recommendations. Whether you need quick insights, task automation, or just a helping hand, I am here to support you every step of the way."
+
+        # Generate audio with Deepgram
+        audio_filename = generate_audio_with_deepgram(answer)
+
+        if not audio_filename  :
+            return jsonify({"status": "Call Failed", "reason": "Audio generation failed"}), 500
+
+        public_audio_url = f"http://159.223.165.147:5555/build/audio/{audio_filename}"
+
+        try:
+            call = client.calls.create(
+                twiml=f'<Response><Play>{public_audio_url}</Play></Response>',
+                to=to_number,
+                from_=TWILIO_PHONE_NUMBER,
             )            
         
             print(call.sid)
