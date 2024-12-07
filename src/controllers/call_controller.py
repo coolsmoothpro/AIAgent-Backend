@@ -118,38 +118,93 @@ def aiagent_call():
 
 
 # Route to make outbound call
-@agent.route("/aiwelcome-call", methods=["POST"])
+# @agent.route("/aiwelcome-call", methods=["POST"])
+# def aiwelcome_call():
+#     data = request.json
+#     if "phone" in data and "fullname" in data:
+#         country_code = re.match(r"\+\d+", data["phone"]).group()
+#         to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
+#         fullname = data["fullname"]
+#         answer = f"Hello, {fullname}, Welcome to LeadGoblin! I am Alyse, your personalized AI assistant, designed to make your life easier by handling everything from answering questions and managing schedules to offering smart recommendations. Whether you need quick insights, task automation, or just a helping hand, I am here to support you every step of the way."
+
+#         # Generate audio with Deepgram
+#         audio_filename = generate_audio_with_deepgram(answer)
+
+#         if not audio_filename  :
+#             return jsonify({"status": "Call Failed", "reason": "Audio generation failed"}), 500
+
+#         public_audio_url = f"http://159.223.165.147:5555/build/audio/{audio_filename}"
+
+#         try:
+#             call = client.calls.create(
+#                 twiml=f'<Response><Play>{public_audio_url}</Play></Response>',
+#                 to=to_number,
+#                 from_=TWILIO_PHONE_NUMBER,
+#             )            
+        
+#             print(call.sid)
+            
+#             return jsonify({"status": "Call initiated", "call_sid": call.sid})
+
+#         except:
+#             return jsonify({"status": "This is a Trial account. You cannot call unverifed phone number!"})
+
+#     return jsonify({"status": "Call Failed", "reason": "No phone number provided"}), 400
+
+
+@agent.route('/aiwelcome-call', methods=['POST'])
 def aiwelcome_call():
     data = request.json
     if "phone" in data and "fullname" in data:
         country_code = re.match(r"\+\d+", data["phone"]).group()
         to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
         fullname = data["fullname"]
-        answer = f"Hello, {fullname}, Welcome to LeadGoblin! I am Alyse, your personalized AI assistant, designed to make your life easier by handling everything from answering questions and managing schedules to offering smart recommendations. Whether you need quick insights, task automation, or just a helping hand, I am here to support you every step of the way."
-
-        # Generate audio with Deepgram
-        audio_filename = generate_audio_with_deepgram(answer)
-
-        if not audio_filename  :
-            return jsonify({"status": "Call Failed", "reason": "Audio generation failed"}), 500
-
-        public_audio_url = f"http://159.223.165.147:5555/build/audio/{audio_filename}"
 
         try:
             call = client.calls.create(
-                twiml=f'<Response><Play>{public_audio_url}</Play></Response>',
                 to=to_number,
                 from_=TWILIO_PHONE_NUMBER,
-            )            
-        
-            print(call.sid)
-            
-            return jsonify({"status": "Call initiated", "call_sid": call.sid})
+                url=f"http://159.223.165.147:5555/voice"
+            )
 
+            return jsonify({"message": "Call initiated", "call_sid": call.sid})
+        
         except:
             return jsonify({"status": "This is a Trial account. You cannot call unverifed phone number!"})
 
-    return jsonify({"status": "Call Failed", "reason": "No phone number provided"}), 400
+    return jsonify({"message": "Call initiated", "call_sid": call.sid})
+
+# Twilio Voice Webhook
+@agent.route('/voice', methods=['POST'])
+def voice_response():
+    # Twilio's request passes the user's input (DTMF or speech) to this route.
+    response = VoiceResponse()
+
+    response.say("Welcome to the AI Agent. Please state your question.", voice='alice')
+
+    # Capture the user's input via speech
+    response.record(max_length=30, action='/process_audio')
+
+    return str(response)
+
+
+@agent.route('/process_audio', methods=['POST'])
+def process_audio():
+    # Handle the recorded audio file URL (Twilio passes it here)
+    recording_url = request.form['RecordingUrl']
+
+    # Call OpenAI to process the text
+    response = VoiceResponse()
+
+    try:
+        # Simulate AI response
+        ai_response = "I'm sorry, the AI Agent is still being trained."  # Replace with OpenAI API call
+
+        response.say(ai_response, voice='alice')
+    except Exception as e:
+        response.say("There was an error processing your question.", voice='alice')
+
+    return str(response)
 
 
 # Route for outbound call prompt
