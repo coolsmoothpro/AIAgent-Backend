@@ -166,7 +166,7 @@ def aiwelcome_call():
             call = client.calls.create(
                 to=to_number,
                 from_=TWILIO_PHONE_NUMBER,
-                url=f"http://159.223.165.147:5555/voice"
+                url="http://159.223.165.147:5555/voice"
             )
 
             return jsonify({"message": "Call initiated", "call_sid": call.sid})
@@ -185,9 +185,9 @@ def voice_response():
     response.say("Welcome to the AI Agent. Please state your question.", voice='alice')
 
     # Capture the user's input via speech
-    response.connect().stream(
-        url=f'ws://0.0.0.0:8765'
-    )
+    # response.connect().stream(
+    #     url=f'ws://0.0.0.0:8765'
+    # )
 
     return str(response)
 
