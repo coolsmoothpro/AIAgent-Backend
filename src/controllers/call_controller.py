@@ -185,9 +185,9 @@ def voice_response():
     response.say("Welcome to the AI Agent. Please state your question.", voice='alice')
 
     # Capture the user's input via speech
-    # response.connect().stream(
-    #     url=f'ws://0.0.0.0:8765'
-    # )
+    response.connect().stream(
+        url=f'ws://0.0.0.0:8765'
+    )
 
     return str(response)
 
