@@ -1,14 +1,33 @@
 from flask import Flask, request, jsonify
 import requests
 import os
-from flask import request, Response, json, Blueprint
+from flask import Flask, request, Response, json, Blueprint, jsonify
 from twilio.rest import Client
-from twilio.twiml.voice_response import VoiceResponse
+from twilio.twiml.voice_response import VoiceResponse, Connect, Say
 from celery import Celery
 import time
 import threading
 import re
 from websocket_server import WebsocketServer
+import base64
+import asyncio
+import websockets
+from flask_sockets import Sockets
+
+SYSTEM_MESSAGE = (
+    "You are a helpful and bubbly AI assistant who loves to chat about "
+    "anything the user is interested in and is prepared to offer them facts. "
+    "You have a penchant for dad jokes, owl jokes, and rickrolling – subtly. "
+    "Always stay positive, but work in a joke when appropriate."
+)
+VOICE = 'alloy'
+LOG_EVENT_TYPES = [
+    'error', 'response.content.done', 'rate_limits.updated',
+    'response.done', 'input_audio_buffer.committed',
+    'input_audio_buffer.speech_stopped', 'input_audio_buffer.speech_started',
+    'session.created'
+]
+SHOW_TIMING_MATH = False
 
 # # Setup Celery for async tasks
 # app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
@@ -39,6 +58,7 @@ power_dialer_prompt = ""
 
 
 agent = Blueprint("agent", __name__)
+sockets = Sockets(agent)
 
 # Route to receive incoming calls
 @agent.route("/incoming-call", methods=["POST"])
@@ -119,6 +139,169 @@ def aiagent_call():
     return jsonify({"status": "Call Failed", "reason": "No phone number provided"}), 400
 
 
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
+@agent.route("/aiwelcome-call", methods=["GET", "POST"])
+def aiwelcome_call():
+    """Handle incoming call and return TwiML response to connect to Media Stream."""
+    response = VoiceResponse()
+    response.say("Please wait while we connect your call to the A. I. voice assistant, powered by Twilio and the Open-A.I. Realtime API")
+    response.pause(length=1)
+    response.say("O.K. you can start talking!")
+    connect = Connect()
+    connect.stream(url=f'wss://http://159.223.165.147:5555/api/v1/agent/media-stream')
+    response.append(connect)
+    return Response(str(response), content_type="application/xml")
+
+@sockets.route('/media-stream')
+def handle_media_stream(ws):
+    """Handle WebSocket connections between Twilio and OpenAI."""
+    print("Client connected")
+
+    async def process():
+        async with websockets.connect(
+            'wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01',
+            extra_headers={
+                "Authorization": f"Bearer {OPENAI_API_KEY}",
+                "OpenAI-Beta": "realtime=v1"
+            }
+        ) as openai_ws:
+            await initialize_session(openai_ws)
+
+            stream_sid = None
+            latest_media_timestamp = 0
+            last_assistant_item = None
+            mark_queue = []
+            response_start_timestamp_twilio = None
+
+            async def receive_from_twilio():
+                """Receive audio data from Twilio and send it to the OpenAI Realtime API."""
+                nonlocal stream_sid, latest_media_timestamp
+                try:
+                    while True:
+                        message = await ws.receive()
+                        data = json.loads(message)
+                        if data['event'] == 'media' and openai_ws.open:
+                            latest_media_timestamp = int(data['media']['timestamp'])
+                            audio_append = {
+                                "type": "input_audio_buffer.append",
+                                "audio": data['media']['payload']
+                            }
+                            await openai_ws.send(json.dumps(audio_append))
+                        elif data['event'] == 'start':
+                            stream_sid = data['start']['streamSid']
+                            print(f"Incoming stream has started {stream_sid}")
+                            response_start_timestamp_twilio = None
+                            latest_media_timestamp = 0
+                            last_assistant_item = None
+                        elif data['event'] == 'mark':
+                            if mark_queue:
+                                mark_queue.pop(0)
+                except websockets.exceptions.ConnectionClosed:
+                    print("Client disconnected.")
+                    if openai_ws.open:
+                        await openai_ws.close()
+
+            async def send_to_twilio():
+                """Receive events from the OpenAI Realtime API, send audio back to Twilio."""
+                nonlocal stream_sid, last_assistant_item, response_start_timestamp_twilio
+                try:
+                    while True:
+                        openai_message = await openai_ws.recv()
+                        response = json.loads(openai_message)
+                        if response['type'] in LOG_EVENT_TYPES:
+                            print(f"Received event: {response['type']}", response)
+
+                        if response.get('type') == 'response.audio.delta' and 'delta' in response:
+                            audio_payload = base64.b64encode(base64.b64decode(response['delta'])).decode('utf-8')
+                            audio_delta = {
+                                "event": "media",
+                                "streamSid": stream_sid,
+                                "media": {
+                                    "payload": audio_payload
+                                }
+                            }
+                            await ws.send(json.dumps(audio_delta))
+
+                            if response_start_timestamp_twilio is None:
+                                response_start_timestamp_twilio = latest_media_timestamp
+                                if SHOW_TIMING_MATH:
+                                    print(f"Setting start timestamp for new response: {response_start_timestamp_twilio}ms")
+
+                            if response.get('item_id'):
+                                last_assistant_item = response['item_id']
+
+                            await send_mark(ws, stream_sid)
+
+                        if response.get('type') == 'input_audio_buffer.speech_started':
+                            print("Speech started detected.")
+                            if last_assistant_item:
+                                print(f"Interrupting response with id: {last_assistant_item}")
+                                await handle_speech_started_event()
+                except Exception as e:
+                    print(f"Error in send_to_twilio: {e}")
+
+            async def handle_speech_started_event():
+                """Handle interruption when the caller's speech starts."""
+                nonlocal response_start_timestamp_twilio, last_assistant_item
+                print("Handling speech started event.")
+                if mark_queue and response_start_timestamp_twilio is not None:
+                    elapsed_time = latest_media_timestamp - response_start_timestamp_twilio
+                    if SHOW_TIMING_MATH:
+                        print(f"Calculating elapsed time for truncation: {latest_media_timestamp} - {response_start_timestamp_twilio} = {elapsed_time}ms")
+
+                    if last_assistant_item:
+                        if SHOW_TIMING_MATH:
+                            print(f"Truncating item with ID: {last_assistant_item}, Truncated at: {elapsed_time}ms")
+
+                        truncate_event = {
+                            "type": "conversation.item.truncate",
+                            "item_id": last_assistant_item,
+                            "content_index": 0,
+                            "audio_end_ms": elapsed_time
+                        }
+                        await openai_ws.send(json.dumps(truncate_event))
+
+                    await ws.send(json.dumps({
+                        "event": "clear",
+                        "streamSid": stream_sid
+                    }))
+
+                    mark_queue.clear()
+                    last_assistant_item = None
+                    response_start_timestamp_twilio = None
+
+            async def send_mark(connection, stream_sid):
+                if stream_sid:
+                    mark_event = {
+                        "event": "mark",
+                        "streamSid": stream_sid,
+                        "mark": {"name": "responsePart"}
+                    }
+                    await connection.send(json.dumps(mark_event))
+                    mark_queue.append('responsePart')
+
+            await asyncio.gather(receive_from_twilio(), send_to_twilio())
+
+    asyncio.run(process())
+
+async def initialize_session(openai_ws):
+    """Control initial session with OpenAI."""
+    session_update = {
+        "type": "session.update",
+        "session": {
+            "turn_detection": {"type": "server_vad"},
+            "input_audio_format": "g711_ulaw",
+            "output_audio_format": "g711_ulaw",
+            "voice": VOICE,
+            "instructions": SYSTEM_MESSAGE,
+            "modalities": ["text", "audio"],
+            "temperature": 0.8,
+        }
+    }
+    print('Sending session update:', json.dumps(session_update))
+    await openai_ws.send(json.dumps(session_update))
+
 # Route to make outbound call
 # @agent.route("/aiwelcome-call", methods=["POST"])
 # def aiwelcome_call():
@@ -154,89 +337,48 @@ def aiagent_call():
 #     return jsonify({"status": "Call Failed", "reason": "No phone number provided"}), 400
 
 
-@agent.route('/aiwelcome-call', methods=['POST'])
-def aiwelcome_call():
-    data = request.json
-    if "phone" in data and "fullname" in data:
-        country_code = re.match(r"\+\d+", data["phone"]).group()
-        to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
-        fullname = data["fullname"]
+# @agent.route('/aiwelcome-call', methods=['POST'])
+# def aiwelcome_call():
+#     data = request.json
+#     if "phone" in data and "fullname" in data:
+#         country_code = re.match(r"\+\d+", data["phone"]).group()
+#         to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
+#         fullname = data["fullname"]
 
-        try:
-            call = client.calls.create(
-                to=to_number,
-                from_=TWILIO_PHONE_NUMBER,
-                url=f"http://159.223.165.147:5555/api/v1/agent/voice"
-            )
+#         try:
+#             call = client.calls.create(
+#                 to=to_number,
+#                 from_=TWILIO_PHONE_NUMBER,
+#                 url=f"http://159.223.165.147:5555/api/v1/agent/voice"
+#             )
 
-            return jsonify({"message": "Call initiated", "call_sid": call.sid})
+#             return jsonify({"message": "Call initiated", "call_sid": call.sid})
         
-        except:
-            return jsonify({"status": "This is a Trial account. You cannot call unverifed phone number!"})
+#         except:
+#             return jsonify({"status": "This is a Trial account. You cannot call unverifed phone number!"})
 
-    return jsonify({"message": "Call initiated", "call_sid": call.sid})
+#     return jsonify({"message": "Call initiated", "call_sid": call.sid})
 
-# Twilio Voice Webhook
-@agent.route('/voice', methods=['POST'])
-def voice_response():
-    # Twilio's request passes the user's input (DTMF or speech) to this route.
-    response = VoiceResponse()
+# # Twilio Voice Webhook
+# @agent.route('/voice', methods=['POST'])
+# def voice_response():
+#     # Twilio's request passes the user's input (DTMF or speech) to this route.
+#     response = VoiceResponse()
 
-    response.say("Welcome to the AI Agent. Please state your question.", voice='alice')
+#     response.say("Welcome to the AI Agent. Please state your question.", voice='alice')
 
-    # Capture the user's input via speech
-    response.connect().stream(
-        url=f'wss://159.223.165.147:8765'
-    )
+#     # Capture the user's input via speech
+#     response.connect().stream(
+#         url=f'wss://159.223.165.147:8765'
+#     )
 
-    return str(response)
-
-
-def handle_new_client(client, server):
-    print("Handles new WebSocket connections.")
-
-    print(f"New client connected: {client['id']}")
+#     return str(response)
 
 
-def handle_received_message(client, server, message):
-    """
-    Handles incoming audio streams from Twilio via WebSocket.
-    """
-    print(f"Received audio message: {message}")
-
-    # Process audio with AI agent here (this is a placeholder)
-    ai_response = "Processing your audio input..."
-
-    # Send the response back to the WebSocket client
-    server.send_message(client, ai_response)
-
-def start_websocket_server():
-    print("Starts the WebSocket server.")
-    
-    global websocket_server
-    websocket_server = WebsocketServer(host=WEBSOCKET_SERVER_HOST, port=WEBSOCKET_SERVER_PORT)
-    websocket_server.set_fn_new_client(handle_new_client)
-    websocket_server.set_fn_message_received(handle_received_message)
-    websocket_server.run_forever()
 
 
-@agent.route('/process_audio', methods=['POST'])
-def process_audio():
-    # Handle the recorded audio file URL (Twilio passes it here)
-    recording_url = request.form['RecordingUrl']
 
-    # Call OpenAI to process the text
-    response = VoiceResponse()
 
-    try:
-        # Simulate AI response
-        ai_response = "I'm sorry, the AI Agent is still being trained."  # Replace with OpenAI API call
-
-        response.say(ai_response, voice='alice')
-    except Exception as e:
-        response.say("There was an error processing your question.", voice='alice')
-
-    return str(response)
 
 
 # Route for outbound call prompt
@@ -402,8 +544,8 @@ def generate_prompt(prompt):
 
 
 if __name__ == "__main__":
-    websocket_thread = threading.Thread(target=start_websocket_server)
-    websocket_thread.daemon = True
-    websocket_thread.start()
+    # websocket_thread = threading.Thread(target=start_websocket_server)
+    # websocket_thread.daemon = True
+    # websocket_thread.start()
     
     app.run(debug=True, host="0.0.0.0", port=5000)
