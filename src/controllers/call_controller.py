@@ -8,13 +8,15 @@ from celery import Celery
 import time
 import threading
 import re
-
+from websocket_server import WebsocketServer
 
 # # Setup Celery for async tasks
 # app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
 # app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
 # celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 # celery.conf.update(app.config)
+
+websocket_server = None
 
 # Twilio credentials
 TWILIO_SID = os.environ.get("TWILIO_SID")
@@ -183,9 +185,41 @@ def voice_response():
     response.say("Welcome to the AI Agent. Please state your question.", voice='alice')
 
     # Capture the user's input via speech
-    response.record(max_length=30, action='/process_audio')
+    response.connect().stream(
+        url=f'ws://159.223.165.147:5555'
+    )
 
     return str(response)
+
+
+def handle_new_client(client, server):
+    """
+    Handles new WebSocket connections.
+    """
+    print(f"New client connected: {client['id']}")
+
+
+def handle_received_message(client, server, message):
+    """
+    Handles incoming audio streams from Twilio via WebSocket.
+    """
+    print(f"Received audio message: {message}")
+
+    # Process audio with AI agent here (this is a placeholder)
+    ai_response = "Processing your audio input..."
+
+    # Send the response back to the WebSocket client
+    server.send_message(client, ai_response)
+
+def start_websocket_server():
+    """
+    Starts the WebSocket server.
+    """
+    global websocket_server
+    websocket_server = WebsocketServer(host=WEBSOCKET_SERVER_HOST, port=WEBSOCKET_SERVER_PORT)
+    websocket_server.set_fn_new_client(handle_new_client)
+    websocket_server.set_fn_message_received(handle_received_message)
+    websocket_server.run_forever()
 
 
 @agent.route('/process_audio', methods=['POST'])
@@ -370,4 +404,8 @@ def generate_prompt(prompt):
 
 
 if __name__ == "__main__":
+    websocket_thread = threading.Thread(target=start_websocket_server)
+    websocket_thread.daemon = True
+    websocket_thread.start()
+    
     app.run(debug=True, host="0.0.0.0", port=5000)
