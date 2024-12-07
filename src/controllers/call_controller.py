@@ -55,6 +55,7 @@ current_call_sid = None
 call_logs = {}
 power_dialer_prompt = ""
 
+socketio = SocketIO()
 
 agent = Blueprint("agent", __name__)
 
@@ -151,9 +152,13 @@ def aiwelcome_call():
     response.append(connect)
     return Response(str(response), content_type="application/xml")
 
-@agent.websocket("/media-stream")
-async def handle_media_stream(websocket):
+@agent.route("/media-stream")
+def handle_media_stream():
     """Handle WebSocket connections between Twilio and OpenAI."""
+    return app.sockets.handle_websocket_connection()
+
+async def handle_websocket_connection(websocket, path):
+    """Handles the WebSocket connection for media stream."""
     print("Client connected")
     await websocket.accept()
 

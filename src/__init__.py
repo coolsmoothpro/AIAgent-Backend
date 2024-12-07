@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_socketio import SocketIO
+from flask_sockets import Sockets
 import os
 from src.config.config import Config
 from dotenv import load_dotenv
@@ -11,7 +11,8 @@ from flask import send_from_directory
 load_dotenv()
 
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*")
+# socketio = SocketIO(app, cors_allowed_origins="*")
+sockets = Sockets(app, cors_allowed_origins="*")
 
 app = Flask(__name__, static_folder='../static/build', template_folder='templates')
 
