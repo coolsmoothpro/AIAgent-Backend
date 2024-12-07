@@ -186,7 +186,7 @@ def voice_response():
 
     # Capture the user's input via speech
     response.connect().stream(
-        url=f'ws://159.223.165.147:8765'
+        url=f'wss://159.223.165.147:8765'
     )
 
     return str(response)
@@ -194,7 +194,7 @@ def voice_response():
 
 def handle_new_client(client, server):
     print("Handles new WebSocket connections.")
-    
+
     print(f"New client connected: {client['id']}")
 
 
