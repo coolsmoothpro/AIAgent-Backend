@@ -138,8 +138,30 @@ def aiagent_call():
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
-@agent.route("/aiwelcome-call", methods=["GET", "POST"])
+@agent.route('/aiwelcome-call', methods=['POST'])
 def aiwelcome_call():
+    data = request.json
+    if "phone" in data and "fullname" in data:
+        country_code = re.match(r"\+\d+", data["phone"]).group()
+        to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
+        fullname = data["fullname"]
+
+        try:
+            call = client.calls.create(
+                to=to_number,
+                from_=TWILIO_PHONE_NUMBER,
+                url=f"http://159.223.165.147:5555/api/v1/agent/voice"
+            )
+
+            return jsonify({"message": "Call initiated", "call_sid": call.sid})
+        
+        except:
+            return jsonify({"status": "This is a Trial account. You cannot call unverifed phone number!"})
+
+    return jsonify({"message": "Call initiated", "call_sid": call.sid})
+
+@agent.route("/voice", methods=["GET", "POST"])
+def voice():
     """Handle incoming call and return TwiML response to connect to Media Stream."""
     response = VoiceResponse()
     response.say("Please wait while we connect your call to the A. I. voice assistant, powered by Twilio and the Open-A.I. Realtime API")
