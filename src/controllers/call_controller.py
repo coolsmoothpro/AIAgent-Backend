@@ -193,9 +193,8 @@ def voice_response():
 
 
 def handle_new_client(client, server):
-    """
-    Handles new WebSocket connections.
-    """
+    print("Handles new WebSocket connections.")
+    
     print(f"New client connected: {client['id']}")
 
 
@@ -212,9 +211,8 @@ def handle_received_message(client, server, message):
     server.send_message(client, ai_response)
 
 def start_websocket_server():
-    """
-    Starts the WebSocket server.
-    """
+    print("Starts the WebSocket server.")
+    
     global websocket_server
     websocket_server = WebsocketServer(host=WEBSOCKET_SERVER_HOST, port=WEBSOCKET_SERVER_PORT)
     websocket_server.set_fn_new_client(handle_new_client)
