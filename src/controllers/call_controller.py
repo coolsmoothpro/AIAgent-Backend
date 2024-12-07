@@ -1,7 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response, Blueprint, json
 import requests
 import os
-from flask import Flask, request, Response, json, Blueprint, jsonify
 from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse, Connect, Say
 from celery import Celery
