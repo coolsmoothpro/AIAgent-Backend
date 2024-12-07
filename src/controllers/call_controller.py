@@ -55,8 +55,6 @@ current_call_sid = None
 call_logs = {}
 power_dialer_prompt = ""
 
-socketio = SocketIO()
-
 agent = Blueprint("agent", __name__)
 
 # Route to receive incoming calls
