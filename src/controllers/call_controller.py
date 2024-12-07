@@ -166,7 +166,7 @@ def aiwelcome_call():
             call = client.calls.create(
                 to=to_number,
                 from_=TWILIO_PHONE_NUMBER,
-                url="http://159.223.165.147:5555/voice"
+                url=f"http://159.223.165.147:5555/api/v1/agent/voice"
             )
 
             return jsonify({"message": "Call initiated", "call_sid": call.sid})
