@@ -186,7 +186,7 @@ def voice_response():
 
     # Capture the user's input via speech
     response.connect().stream(
-        url=f'ws://0.0.0.0:8765'
+        url=f'ws://159.223.165.147:5555'
     )
 
     return str(response)
