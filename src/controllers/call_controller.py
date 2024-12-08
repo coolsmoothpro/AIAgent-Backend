@@ -57,8 +57,11 @@ current_call_sid = None
 call_logs = {}
 power_dialer_prompt = ""
 
-cert_path = os.path.join(os.path.dirname(__file__), 'cert.pem')
-key_path = os.path.join(os.path.dirname(__file__), 'key.pem')
+project_root = os.path.dirname(os.path.abspath(__file__))
+backend_dir = os.path.abspath(os.path.join(project_root, "..", ".."))
+
+cert_path = os.path.join(backend_dir, "cert.pem")
+key_path = os.path.join(backend_dir, 'key.pem')
 
 app = Flask(__name__)
 sockets = Sockets(app)
@@ -149,13 +152,11 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 @agent.route('/aiwelcome-call', methods=['POST'])
 def aiwelcome_call():
     data = request.json
+    
     if "phone" in data and "fullname" in data:
         country_code = re.match(r"\+\d+", data["phone"]).group()
         to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
         fullname = data["fullname"]
-
-        print("cert_path", cert_path)
-        print("key_path ", key_path)
 
         try:
             call = client.calls.create(
@@ -178,9 +179,9 @@ def voice():
     response.say("Please wait while we connect your call to the AI. voice assistant, powered by Twilio and the Open-A.I. Realtime API")
     response.pause(length=1)
     
-    # connect = Connect()
-    # connect.stream(url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
-    # response.append(connect)
+    connect = Connect()
+    connect.stream(url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
+    response.append(connect)
     response.say("O.K. you can start talking!")
     response.pause(length=1)
     return Response(str(response), content_type="application/xml")
