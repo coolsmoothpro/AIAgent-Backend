@@ -604,7 +604,8 @@ if __name__ == "__main__":
     # websocket_thread = threading.Thread(target=start_websocket_server)
     # websocket_thread.daemon = True
     # websocket_thread.start()
-    
+    print('cert', cert_path)
+    print('key_path', key_path)
     # app.run(debug=True, host="0.0.0.0", port=5000)
     server = pywsgi.WSGIServer(('0.0.0.0', 5555), app, handler_class=WebSocketHandler, ssl_context = (cert_path, key_path))
     server.serve_forever()
