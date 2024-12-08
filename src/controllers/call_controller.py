@@ -57,6 +57,10 @@ current_call_sid = None
 call_logs = {}
 power_dialer_prompt = ""
 
+
+app = Flask(__name__)
+sockets = Sockets(app)
+
 agent = Blueprint("agent", __name__)
 
 # Route to receive incoming calls
@@ -171,7 +175,7 @@ def voice():
     
     # connect = Connect()
     connect = Start()
-    connect.stream(name='My Audio Stream', url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
+    connect.stream(name='My Audio Stream', url=f'wss://159.223.165.147:5555/media-stream')
     response.append(connect)
     response.say("O.K. you can start talking!")
     response.pause(length=1)
@@ -183,7 +187,8 @@ def voice():
 #     print("streaming connection")
 #     return app.sockets.handle_websocket_connection()
 
-@agent.websocket("/media-stream")
+
+@sockets.route("/media-stream")
 async def handle_websocket_connection(websocket, path):
     """Handles the WebSocket connection for media stream."""
     print("Client connected")
