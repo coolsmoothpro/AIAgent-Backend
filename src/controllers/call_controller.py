@@ -176,7 +176,7 @@ def voice():
     response.say("O.K. you can start talking!")
     return Response(str(response), content_type="application/xml")
 
-@sockets.route("/media-stream")
+@Sockets.route("/media-stream")
 def handle_media_stream():
     """Handle WebSocket connections between Twilio and OpenAI."""
     print("streaming connection")
