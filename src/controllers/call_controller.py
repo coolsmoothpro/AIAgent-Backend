@@ -57,6 +57,8 @@ current_call_sid = None
 call_logs = {}
 power_dialer_prompt = ""
 
+cert_path = os.path.join(os.path.dirname(__file__), 'cert.pem')
+key_path = os.path.join(os.path.dirname(__file__), 'key.pem')
 
 app = Flask(__name__)
 sockets = Sockets(app)
@@ -174,12 +176,11 @@ def voice():
     response.pause(length=1)
     
     connect = Connect()
-    connect = Start()
+    print("here", cert_path)
     connect.stream(url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
     response.append(connect)
     response.say("O.K. you can start talking!")
     response.pause(length=1)
-    print("here")
     return Response(str(response), content_type="application/xml")
 
 # @agent.route("/media-stream")
@@ -602,5 +603,5 @@ if __name__ == "__main__":
     # websocket_thread.start()
     
     # app.run(debug=True, host="0.0.0.0", port=5000)
-    server = pywsgi.WSGIServer(('0.0.0.0', 5555), app, handler_class=WebSocketHandler, ssl_context = ("cert.pem", "key.pem"))
+    server = pywsgi.WSGIServer(('0.0.0.0', 5555), app, handler_class=WebSocketHandler, ssl_context = (cert_path, key_path))
     server.serve_forever()
