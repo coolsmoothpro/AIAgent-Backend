@@ -175,6 +175,7 @@ def voice():
 @agent.route("/media-stream")
 def handle_media_stream():
     """Handle WebSocket connections between Twilio and OpenAI."""
+    print("streaming connection")
     return app.sockets.handle_websocket_connection()
 
 async def handle_websocket_connection(websocket, path):
