@@ -175,10 +175,11 @@ def voice():
     
     connect = Connect()
     # connect = Start()
-    connect.stream(url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
-    response.append(connect)
+    # connect.stream(url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
+    # response.append(connect)
     response.say("O.K. you can start talking!")
     response.pause(length=1)
+    print("here")
     return Response(str(response), content_type="application/xml")
 
 # @agent.route("/media-stream")
