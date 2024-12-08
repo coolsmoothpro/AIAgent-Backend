@@ -153,6 +153,8 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 def aiwelcome_call():
     data = request.json
     
+    print('cert', cert_path)
+    print('key_path', key_path)
     if "phone" in data and "fullname" in data:
         country_code = re.match(r"\+\d+", data["phone"]).group()
         to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
@@ -604,8 +606,7 @@ if __name__ == "__main__":
     # websocket_thread = threading.Thread(target=start_websocket_server)
     # websocket_thread.daemon = True
     # websocket_thread.start()
-    print('cert', cert_path)
-    print('key_path', key_path)
+
     # app.run(debug=True, host="0.0.0.0", port=5000)
     server = pywsgi.WSGIServer(('0.0.0.0', 5555), app, handler_class=WebSocketHandler, ssl_context = (cert_path, key_path))
     server.serve_forever()
