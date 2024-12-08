@@ -174,9 +174,9 @@ def voice():
     response.pause(length=1)
     
     connect = Connect()
-    # connect = Start()
-    # connect.stream(url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
-    # response.append(connect)
+    connect = Start()
+    connect.stream(url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
+    response.append(connect)
     response.say("O.K. you can start talking!")
     response.pause(length=1)
     print("here")
@@ -602,5 +602,5 @@ if __name__ == "__main__":
     # websocket_thread.start()
     
     # app.run(debug=True, host="0.0.0.0", port=5000)
-    server = pywsgi.WSGIServer(('0.0.0.0', 5555), app, handler_class=WebSocketHandler)
+    server = pywsgi.WSGIServer(('0.0.0.0', 5555), app, handler_class=WebSocketHandler, ssl_context = ("cert.pem", "key.pem"))
     server.serve_forever()
