@@ -12,6 +12,8 @@ import base64
 import asyncio
 import websockets
 from flask_sockets import Sockets
+from gevent import pywsgi
+from geventwebsocket.handler import WebSocketHandler
 
 SYSTEM_MESSAGE = (
     "You are a helpful and bubbly AI assistant who loves to chat about "
@@ -174,7 +176,7 @@ def voice():
     response.say("O.K. you can start talking!")
     return Response(str(response), content_type="application/xml")
 
-@agent.route("/media-stream")
+@sockets.route("/media-stream")
 def handle_media_stream():
     """Handle WebSocket connections between Twilio and OpenAI."""
     print("streaming connection")
@@ -591,4 +593,6 @@ if __name__ == "__main__":
     # websocket_thread.daemon = True
     # websocket_thread.start()
     
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    # app.run(debug=True, host="0.0.0.0", port=5000)
+    server = pywsgi.WSGIServer(('0.0.0.0', 5555), app, handler_class=WebSocketHandler)
+    server.serve_forever()
