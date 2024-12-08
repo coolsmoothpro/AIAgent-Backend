@@ -175,10 +175,12 @@ def voice():
     response.say("Please wait while we connect your call to the AI. voice assistant, powered by Twilio and the Open-A.I. Realtime API")
     response.pause(length=1)
     
-    connect = Connect()
     print("here", cert_path)
-    connect.stream(url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
-    response.append(connect)
+    print("key_path ", key_path)
+
+    # connect = Connect()
+    # connect.stream(url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
+    # response.append(connect)
     response.say("O.K. you can start talking!")
     response.pause(length=1)
     return Response(str(response), content_type="application/xml")
