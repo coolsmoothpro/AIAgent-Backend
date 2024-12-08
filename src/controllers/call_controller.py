@@ -166,17 +166,18 @@ def aiwelcome_call():
 def voice():
     """Handle incoming call and return TwiML response to connect to Media Stream."""
     response = VoiceResponse()
-    response.say("Please wait while we connect your call to the A. I. voice assistant, powered by Twilio and the Open-A.I. Realtime API")
+    response.say("Please wait while we connect your call to the AI. voice assistant, powered by Twilio and the Open-A.I. Realtime API")
     response.pause(length=1)
     
     # connect = Connect()
     connect = Start()
-    connect.stream(name='My Audio Stream', url=f'wss://www.leadgoblin.com/api/v1/agent/media-stream')
+    connect.stream(name='My Audio Stream', url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
     response.append(connect)
     response.say("O.K. you can start talking!")
+    response.pause(length=1)
     return Response(str(response), content_type="application/xml")
 
-@Sockets.route("/media-stream")
+@agent.route("/media-stream")
 def handle_media_stream():
     """Handle WebSocket connections between Twilio and OpenAI."""
     print("streaming connection")
