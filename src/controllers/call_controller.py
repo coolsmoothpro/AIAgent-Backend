@@ -173,9 +173,9 @@ def voice():
     response.say("Please wait while we connect your call to the AI. voice assistant, powered by Twilio and the Open-A.I. Realtime API")
     response.pause(length=1)
     
-    # connect = Connect()
-    connect = Start()
-    connect.stream(name='My Audio Stream', url=f'wss://159.223.165.147:5555/media-stream')
+    connect = Connect()
+    # connect = Start()
+    connect.stream(url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
     response.append(connect)
     response.say("O.K. you can start talking!")
     response.pause(length=1)
@@ -188,7 +188,7 @@ def voice():
 #     return app.sockets.handle_websocket_connection()
 
 
-@sockets.route("/media-stream")
+@sockets.route("/api/v1/agent/media-stream")
 async def handle_websocket_connection(websocket, path):
     """Handles the WebSocket connection for media stream."""
     print("Client connected")
