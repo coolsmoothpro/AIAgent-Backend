@@ -154,6 +154,9 @@ def aiwelcome_call():
         to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
         fullname = data["fullname"]
 
+        print("cert_path", cert_path)
+        print("key_path ", key_path)
+
         try:
             call = client.calls.create(
                 to=to_number,
@@ -175,9 +178,6 @@ def voice():
     response.say("Please wait while we connect your call to the AI. voice assistant, powered by Twilio and the Open-A.I. Realtime API")
     response.pause(length=1)
     
-    print("here", cert_path)
-    print("key_path ", key_path)
-
     # connect = Connect()
     # connect.stream(url=f'wss://159.223.165.147:5555/api/v1/agent/media-stream')
     # response.append(connect)
