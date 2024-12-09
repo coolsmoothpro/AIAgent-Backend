@@ -234,7 +234,7 @@ def voice():
     response.pause(length=1)
     
     connect = Connect()
-    connect.stream(url=f'ws://www.leadgoblin.com:5555/api/v1/agent/media-stream')
+    connect.stream(url=f'ws://159.223.165.147:5555/api/v1/agent/media-stream')
     response.append(connect)
     response.say("O.K. you can start talking!")
     print("you can start talking")
