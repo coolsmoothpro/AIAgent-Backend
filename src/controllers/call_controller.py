@@ -187,8 +187,8 @@ def voice():
     response.say("Please wait while we connect your call to the AI. voice assistant, powered by Twilio and the Open-A.I. Realtime API")
     response.pause(length=1)
     
-    connect = Connect()
-    connect.stream(url=f'ws://159.223.165.147:5555/api/v1/agent/media-stream')
+    connect = Start()
+    connect.stream(name='My Audio Stream', url=f'ws://159.223.165.147:5555/api/v1/agent/media-stream')
     response.append(connect)
     response.say("O.K. you can start talking!")
     response.pause(length=1)
