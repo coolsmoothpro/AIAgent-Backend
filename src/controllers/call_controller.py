@@ -199,7 +199,8 @@ def transcription():
     
     # Get the transcription text from the Twilio request
     transcription = request.form.get("TranscriptionText")
-    
+    logging.debug(f"Transcription received: {transcription}")
+    print(f"Transcription received: {transcription}")
     if transcription:
 
         # Get the response from OpenAI
