@@ -208,11 +208,11 @@ def transcription():
         
         # Now respond back to the user with the AI's response
         # return redirect(f"http://159.223.165.147:5555/api/v1/agent/speak?text={ai_response}")
-        if ai_response:
-            response = VoiceResponse()
-            response.say("ai_response here")
-            response.hangup()
-            return str(response)
+        # if ai_response:
+        response = VoiceResponse()
+        response.say("ai_response here")
+        response.hangup()
+        return str(response)
     
     return "Sorry, I couldn't understand your input."
 
