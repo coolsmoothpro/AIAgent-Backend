@@ -241,14 +241,14 @@ def voice():
     logger.info("you can start talking")
     return Response(str(response), content_type="application/xml")
 
-@agent.route("/media-stream")
-def handle_media_stream():
-    """Handle WebSocket connections between Twilio and OpenAI."""
-    print("streaming connection")
-    return app.sockets.handle_websocket_connection()
+# @agent.route("/media-stream")
+# def handle_media_stream():
+#     """Handle WebSocket connections between Twilio and OpenAI."""
+#     print("streaming connection")
+#     return app.sockets.handle_websocket_connection()
 
 
-# @sockets.route("/api/v1/agent/media-stream")
+@sockets.route("/api/v1/agent/media-stream")
 async def handle_websocket_connection(websocket):
     """Handles the WebSocket connection for media stream."""
     print("Client connected")
