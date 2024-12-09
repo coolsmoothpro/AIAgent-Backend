@@ -237,8 +237,8 @@ def voice():
     connect.stream(url=f'wss://www.leadgoblin.com/api/v1/agent/media-stream')
     response.append(connect)
     response.say("O.K. you can start talking!")
+    print("you can start talking")
     response.pause(length=5)
-    logger.info("you can start talking")
     return Response(str(response), content_type="application/xml")
 
 # @agent.route("/media-stream")
@@ -252,7 +252,6 @@ def voice():
 async def handle_websocket_connection(websocket):
     """Handles the WebSocket connection for media stream."""
     print("Client connected")
-    logger.info("Client connected")
     
     await websocket.accept()
 
