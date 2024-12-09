@@ -68,9 +68,9 @@ cert_path = os.path.join(backend_dir, "cert.pem")
 key_path = os.path.join(backend_dir, 'key.pem')
 
 app = Flask(__name__)
-sockets = Sockets(app)
 
 agent = Blueprint("agent", __name__)
+sockets = Sockets()
 
 # Route to receive incoming calls
 @agent.route("/incoming-call", methods=["POST"])
