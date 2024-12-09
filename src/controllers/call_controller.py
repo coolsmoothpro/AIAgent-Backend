@@ -662,9 +662,10 @@ if __name__ == "__main__":
     # websocket_thread.daemon = True
     # websocket_thread.start()
 
-    app.run(ssl_context=('/etc/letsencrypt/live/www.leadgoblin.com/fullchain.pem',
-                     '/etc/letsencrypt/live/www.leadgoblin.com/privkey.pem'),
-        host='0.0.0.0', port=5555)
+    # app.run(ssl_context=('/etc/letsencrypt/live/www.leadgoblin.com/fullchain.pem',
+    #                  '/etc/letsencrypt/live/www.leadgoblin.com/privkey.pem'),
+    #     host='0.0.0.0', port=5555)
     # app.run(debug=True, host="0.0.0.0", port=5000)
-    # server = pywsgi.WSGIServer(('0.0.0.0', 5555), app, handler_class=WebSocketHandler, ssl_context = (cert_path, key_path))
-    # server.serve_forever()
+    server = pywsgi.WSGIServer(('0.0.0.0', 5555), app, handler_class=WebSocketHandler, ssl_context=('/etc/letsencrypt/live/www.leadgoblin.com/fullchain.pem',
+                     '/etc/letsencrypt/live/www.leadgoblin.com/privkey.pem'))
+    server.serve_forever()
