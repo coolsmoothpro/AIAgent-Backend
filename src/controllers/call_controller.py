@@ -15,8 +15,6 @@ from flask_sockets import Sockets
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
-logging.basicConfig(level=logging.INFO)  # Configure the log level
-logger = logging.getLogger(__name__)
 
 SYSTEM_MESSAGE = (
     "You are a helpful and bubbly AI assistant who loves to chat about "
