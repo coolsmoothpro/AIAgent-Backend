@@ -234,7 +234,7 @@ def voice():
     response.say("O.K. you can start talking!")
     print("you can start talking", response)
     print("connect", connect)
-    print(f'Incoming call from {request.form["From"]}')
+    print(f'Incoming call from {request.form}')
     response.pause(length=5)
     return Response(str(response), content_type="application/xml")
 
