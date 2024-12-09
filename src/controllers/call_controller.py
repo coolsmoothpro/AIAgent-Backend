@@ -153,10 +153,6 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 @agent.route('/aiwelcome-call', methods=['POST'])
 def aiwelcome_call():
     data = request.json
-    
-    print('cert', cert_path)
-    print('key_path', key_path)
-    logger.info("This is an aiwelcome_call")
 
     if "phone" in data and "fullname" in data:
         country_code = re.match(r"\+\d+", data["phone"]).group()
