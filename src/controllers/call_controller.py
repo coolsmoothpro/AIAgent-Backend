@@ -206,14 +206,7 @@ def transcription():
         ai_response = generate_prompt(transcription)
         
         # Now respond back to the user with the AI's response
-        # return redirect(f"http://159.223.165.147:5555/api/v1/agent/speak?text={ai_response}")
-        # text = request.args.get("text")
-    
-        if ai_response:
-            response = VoiceResponse()
-            response.say(ai_response)
-            response.hangup()
-            return str(response)
+        return redirect(f"http://159.223.165.147:5555/api/v1/agent/speak?text={ai_response}")
     
     return "Sorry, I couldn't understand your input."
 
