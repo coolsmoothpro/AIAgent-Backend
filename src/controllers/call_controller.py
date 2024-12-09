@@ -191,7 +191,7 @@ def voice():
     connect.stream(url=f'ws://159.223.165.147:5555/api/v1/agent/media-stream')
     response.append(connect)
     response.say("O.K. you can start talking!")
-    response.pause(length=1)
+    response.pause(length=5)
     logger.info("you can start talking")
     return Response(str(response), content_type="application/xml")
 
