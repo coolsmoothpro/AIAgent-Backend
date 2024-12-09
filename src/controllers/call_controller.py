@@ -229,14 +229,14 @@ def voice():
     response.pause(length=1)
     
     connect = Connect()
-    connect.stream(url=f'ws://{request.host}/media-stream')
+    connect.stream(url=f'ws://{request.host}/api/media-stream')
     response.append(connect)
     response.say("O.K. you can start talking!")
-    print("you can start talking")
+    print("you can start talking", request.host)
     response.pause(length=5)
     return Response(str(response), content_type="application/xml")
 
-@sock.route("/media-stream")
+@sock.route("/api/media-stream")
 def handle_media_stream(websocket):
     """Handle WebSocket connections between Twilio and OpenAI."""
     print("streaming connection") 
