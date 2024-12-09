@@ -152,7 +152,7 @@ def aiagent_call():
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
-@agent.route('/aiwelcome-calls', methods=['POST'])
+@agent.route('/aiwelcome-call', methods=['POST'])
 def aiwelcome_call():
     data = request.json
 
@@ -221,7 +221,7 @@ def aiwelcome_call():
     
 #     return "Sorry, I didn't get any response from the AI."
 
-@agent.route("/aiwelcome-call", methods=["GET", "POST"])
+@agent.route("/voice", methods=["GET", "POST"])
 def voice():
     """Handle incoming call and return TwiML response to connect to Media Stream."""
     response = VoiceResponse()
