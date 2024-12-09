@@ -14,6 +14,12 @@ import websockets
 from flask_sockets import Sockets
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,  # Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format="%(asctime)s - %(levelname)s - %(message)s",  # Format for log messages
+)
 
 SYSTEM_MESSAGE = (
     "You are a helpful and bubbly AI assistant who loves to chat about "
@@ -155,6 +161,9 @@ def aiwelcome_call():
     
     print('cert', cert_path)
     print('key_path', key_path)
+    logging.info(cert_path)
+    logging.info(key_path)
+
     if "phone" in data and "fullname" in data:
         country_code = re.match(r"\+\d+", data["phone"]).group()
         to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
@@ -186,6 +195,7 @@ def voice():
     response.append(connect)
     response.say("O.K. you can start talking!")
     response.pause(length=1)
+    logging.info("pasuse")
     return Response(str(response), content_type="application/xml")
 
 # @agent.route("/media-stream")
@@ -199,6 +209,7 @@ def voice():
 async def handle_websocket_connection(websocket, path):
     """Handles the WebSocket connection for media stream."""
     print("Client connected")
+    logging.info("Client connected")
     await websocket.accept()
 
     async with websockets.connect(
