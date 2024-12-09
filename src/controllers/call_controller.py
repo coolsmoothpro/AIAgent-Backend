@@ -209,7 +209,7 @@ def transcription():
         # return redirect(f"http://159.223.165.147:5555/api/v1/agent/speak?text={ai_response}")
         # text = request.args.get("text")
     
-        if text:
+        if ai_response:
             response = VoiceResponse()
             response.say(ai_response)
             response.hangup()
