@@ -664,9 +664,6 @@ if __name__ == "__main__":
     #     host='0.0.0.0', port=5555)
         
     app.run(debug=True, host="0.0.0.0", port=5000)
-    number = client.incoming_phone_numbers.list()[0]
-    number.update(voice_url=public_url + '/call')
-    print(f'Waiting for calls on {number.phone_number}')
     # server = pywsgi.WSGIServer(('0.0.0.0', 5555), app, handler_class=WebSocketHandler, ssl_context=('/etc/letsencrypt/live/www.leadgoblin.com/fullchain.pem',
     #                  '/etc/letsencrypt/live/www.leadgoblin.com/privkey.pem'))
     # server.serve_forever()
