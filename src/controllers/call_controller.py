@@ -70,6 +70,7 @@ app = Flask(__name__)
 agent = Blueprint("agent", __name__)
 sockets = Sockets()
 sock = Sock(app)
+twilio_client = Client()
 
 # Route to receive incoming calls
 @agent.route("/incoming-call", methods=["POST"])
@@ -152,7 +153,7 @@ def aiagent_call():
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
-@agent.route('/aiwelcome-call', methods=['POST'])
+@agent.route('/aiwelcome-calls', methods=['POST'])
 def aiwelcome_call():
     data = request.json
 
@@ -221,7 +222,7 @@ def aiwelcome_call():
     
 #     return "Sorry, I didn't get any response from the AI."
 
-@agent.route("/voice", methods=["GET", "POST"])
+@agent.route("/aiwelcome-call", methods=["GET", "POST"])
 def voice():
     """Handle incoming call and return TwiML response to connect to Media Stream."""
     response = VoiceResponse()
@@ -234,6 +235,7 @@ def voice():
     response.say("O.K. you can start talking!")
     print("you can start talking", response)
     print("connect", connect)
+    print(f'Incoming call from {request.form["From"]}')
     response.pause(length=5)
     return Response(str(response), content_type="application/xml")
 
@@ -658,10 +660,14 @@ if __name__ == "__main__":
     # websocket_thread.daemon = True
     # websocket_thread.start()
 
-    app.run(ssl_context=('/etc/letsencrypt/live/www.leadgoblin.com/fullchain.pem',
-                     '/etc/letsencrypt/live/www.leadgoblin.com/privkey.pem'),
-        host='0.0.0.0', port=5555)
-    # app.run(debug=True, host="0.0.0.0", port=5000)
+    # app.run(ssl_context=('/etc/letsencrypt/live/www.leadgoblin.com/fullchain.pem',
+    #                  '/etc/letsencrypt/live/www.leadgoblin.com/privkey.pem'),
+    #     host='0.0.0.0', port=5555)
+        
+    app.run(debug=True, host="0.0.0.0", port=5000)
+    number = twilio_client.incoming_phone_numbers.list()[0]
+    number.update(voice_url=public_url + '/call')
+    print(f'Waiting for calls on {number.phone_number}')
     # server = pywsgi.WSGIServer(('0.0.0.0', 5555), app, handler_class=WebSocketHandler, ssl_context=('/etc/letsencrypt/live/www.leadgoblin.com/fullchain.pem',
     #                  '/etc/letsencrypt/live/www.leadgoblin.com/privkey.pem'))
     # server.serve_forever()
