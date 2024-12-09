@@ -12,6 +12,7 @@ import base64
 import asyncio
 import websockets
 from flask_sockets import Sockets
+from flask_sock import Sock
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
@@ -68,6 +69,7 @@ app = Flask(__name__)
 
 agent = Blueprint("agent", __name__)
 sockets = Sockets()
+sock = Sock(app)
 
 # Route to receive incoming calls
 @agent.route("/incoming-call", methods=["POST"])
@@ -234,7 +236,7 @@ def voice():
     response.pause(length=5)
     return Response(str(response), content_type="application/xml")
 
-@sockets.route("/media-stream")
+@sock.route("/media-stream")
 def handle_media_stream(websocket):
     """Handle WebSocket connections between Twilio and OpenAI."""
     print("streaming connection") 
