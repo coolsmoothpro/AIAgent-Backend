@@ -199,8 +199,7 @@ def transcription():
     
     # Get the transcription text from the Twilio request
     transcription = request.form.get("TranscriptionText")
-    logging.debug(f"Transcription received: {transcription}")
-    print(f"Transcription received: {transcription}")
+    
     if transcription:
 
         # Get the response from OpenAI
@@ -210,11 +209,11 @@ def transcription():
         # return redirect(f"http://159.223.165.147:5555/api/v1/agent/speak?text={ai_response}")
         # text = request.args.get("text")
     
-        # if ai_response:
-        response = VoiceResponse()
-        response.say(transcription)
-        response.hangup()
-        return str(response)
+        if ai_response:
+            response = VoiceResponse()
+            response.say(ai_response)
+            response.hangup()
+            return str(response)
     
     return "Sorry, I couldn't understand your input."
 
