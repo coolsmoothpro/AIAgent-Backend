@@ -14,7 +14,6 @@ import websockets
 from flask_sockets import Sockets
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
-import logging
 
 logging.basicConfig(level=logging.INFO)  # Configure the log level
 logger = logging.getLogger(__name__)
@@ -241,11 +240,12 @@ def voice():
     response.pause(length=5)
     return Response(str(response), content_type="application/xml")
 
-@agent.route("/media-stream")
-def handle_media_stream():
+@sockets.route("/media-stream")
+def handle_media_stream(websocket):
     """Handle WebSocket connections between Twilio and OpenAI."""
-    print("streaming connection")
-    return app.sockets.handle_websocket_connection()
+    print("streaming connection") 
+    asyncio.run(handle_websocket_connection(websocket))
+    # return app.sockets.handle_websocket_connection()
 
 
 # @sockets.route("/api/v1/agent/media-stream")
