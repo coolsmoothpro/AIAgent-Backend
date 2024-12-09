@@ -185,12 +185,13 @@ def voice():
     """Respond to incoming phone calls with a prompt for AI interaction."""
     
     response = VoiceResponse()
-    
+    ai_response = generate_prompt("Tell me about openAI")
     # Ask for input from the user (this will be spoken to the user)
-    response.say("Hello, this is your AI assistant. Please say something and I will respond.")
+    response.say(ai_response)
+    response.hangup()
     
     # Record the user's speech
-    response.record(timeout=5, transcribe=True, transcribe_callback="http://159.223.165.147:5555/api/v1/agent/transcription")
+    # response.record(timeout=5, transcribe=True, transcribe_callback="http://159.223.165.147:5555/api/v1/agent/transcription")
     
     return str(response)
 
