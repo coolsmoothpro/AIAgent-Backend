@@ -68,7 +68,7 @@ key_path = os.path.join(backend_dir, 'key.pem')
 app = Flask(__name__)
 
 agent = Blueprint("agent", __name__)
-sockets = Sockets()
+sockets = Sockets(app)
 sock = Sock(app)
 
 # Route to receive incoming calls
@@ -239,7 +239,7 @@ def voice():
     response.pause(length=5)
     return Response(str(response), content_type="application/xml")
 
-@sock.route("/api/media-stream")
+@sockets.route("/api/media-stream")
 def handle_media_stream(websocket):
     """Handle WebSocket connections between Twilio and OpenAI."""
     print("streaming connection") 
