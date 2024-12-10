@@ -11,7 +11,7 @@ from websocket_server import WebsocketServer
 import base64
 import asyncio
 import websockets
-# from flask_sockets import Sockets
+from flask_sockets import Sockets
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
