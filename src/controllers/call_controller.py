@@ -11,8 +11,7 @@ from websocket_server import WebsocketServer
 import base64
 import asyncio
 import websockets
-from flask_sockets import Sockets
-from flask_sock import Sock
+# from flask_sockets import Sockets
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
 
@@ -68,8 +67,7 @@ key_path = os.path.join(backend_dir, 'key.pem')
 app = Flask(__name__)
 
 agent = Blueprint("agent", __name__)
-sockets = Sockets(app)
-sock = Sock(app)
+# sockets = Sockets(app)
 
 # Route to receive incoming calls
 @agent.route("/incoming-call", methods=["POST"])
@@ -150,31 +148,6 @@ def aiagent_call():
     return jsonify({"status": "Call Failed", "reason": "No phone number provided"}), 400
 
 
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-
-@agent.route('/aiwelcome-call', methods=['POST'])
-def aiwelcome_call():
-    data = request.json
-
-    if "phone" in data and "fullname" in data:
-        country_code = re.match(r"\+\d+", data["phone"]).group()
-        to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
-        fullname = data["fullname"]
-
-        try:
-            call = client.calls.create(
-                to=to_number,
-                from_=TWILIO_PHONE_NUMBER,
-                url=f"http://159.223.165.147:5555/api/v1/agent/voice"
-            )
-
-            return jsonify({"message": "Call initiated", "call_sid": call.sid})
-        
-        except:
-            return jsonify({"status": "This is a Trial account. You cannot call unverifed phone number!"})
-
-    return jsonify({"message": "Call initiated", "call_sid": call.sid})
-
 # @agent.route("/voice", methods=["GET", "POST"])
 # def voice():
 #     """Respond to incoming phone calls with a prompt for AI interaction."""
@@ -221,6 +194,32 @@ def aiwelcome_call():
 #         return str(response)
     
 #     return "Sorry, I didn't get any response from the AI."
+
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
+@agent.route('/aiwelcome-call', methods=['POST'])
+def aiwelcome_call():
+    data = request.json
+
+    if "phone" in data and "fullname" in data:
+        country_code = re.match(r"\+\d+", data["phone"]).group()
+        to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
+        fullname = data["fullname"]
+
+        try:
+            call = client.calls.create(
+                to=to_number,
+                from_=TWILIO_PHONE_NUMBER,
+                url=f"http://159.223.165.147:5555/api/v1/agent/voice"
+            )
+
+            return jsonify({"message": "Call initiated", "call_sid": call.sid})
+        
+        except:
+            return jsonify({"status": "This is a Trial account. You cannot call unverifed phone number!"})
+
+    return jsonify({"message": "Call initiated", "call_sid": call.sid})
+
 
 @agent.route("/voice", methods=["GET", "POST"])
 def voice():
