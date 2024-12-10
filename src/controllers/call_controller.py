@@ -230,13 +230,13 @@ def voice():
     response.pause(length=1)
     
     connect = Connect()
-    connect.stream(url=f'wss://{request.host}/api/media-stream')
+    connect.stream(url=f'ws://{request.host}/api/media-stream')
     response.append(connect)
     response.say("O.K. you can start talking!")
     print("you can start talking", response)
     print("connect", connect)
     print(f'Incoming call from {request.form}')
-    response.pause(length=5)
+    response.pause(length=60)
     return Response(str(response), content_type="application/xml")
 
 @sockets.route("/api/media-stream")
