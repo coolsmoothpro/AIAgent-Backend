@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, Response, Blueprint, json, redirect
+from flask import Flask, request, jsonify, Response, Blueprint, json, redirect, current_app
 import requests
 import os
 from twilio.rest import Client
@@ -64,10 +64,9 @@ backend_dir = os.path.abspath(os.path.join(project_root, "..", ".."))
 cert_path = os.path.join(backend_dir, "cert.pem")
 key_path = os.path.join(backend_dir, 'key.pem')
 
-app = Flask(__name__)
-
 agent = Blueprint("agent", __name__)
-# sockets = Sockets(app)
+sockets = Sockets(current_app)
+
 
 # Route to receive incoming calls
 @agent.route("/incoming-call", methods=["POST"])
