@@ -198,7 +198,7 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 
 @agent.post("/aiwelcome-call")
-async def incoming_call(request: Request):
+async def incoming_call():
     #form_data = await request.form()
     #twilio_request = TwilioRequest(**form_data)
     #session_id = twilio_request.CallSid
@@ -225,7 +225,7 @@ async def incoming_call(request: Request):
     return Response(content=str(response), media_type="application/xml")
 
 @agent.post("/process_recording")
-async def process_recording(request: Request):
+async def process_recording():
     try:
         form_data = await request.form()
         print(form_data)
