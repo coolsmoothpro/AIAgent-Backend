@@ -801,14 +801,14 @@ def transcribe_audio(wav_path):
 
     try:
         with open(wav_path, 'rb') as audio_file:
-        # Multipart form data for the request
-        files = {
-            "file": audio_file,
-            "model": (None, "whisper-1")  # Model name as a form field
-        }
+            # Multipart form data for the request
+            files = {
+                "file": audio_file,
+                "model": (None, "whisper-1")  # Model name as a form field
+            }
         
-        # Make the POST request with the proxy
-        response = requests.post(url, headers=headers, files=files, proxies=proxies)
+            # Make the POST request with the proxy
+            response = requests.post(url, headers=headers, files=files, proxies=proxies)
 
         return response.json()
 
