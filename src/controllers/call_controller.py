@@ -287,37 +287,52 @@ def process_recording():
 
 
 def transcribe_audio(audio_url):
-    """Transcribe the user's audio message using OpenAI Whisper API for Speech-to-Text."""
+    """
+    Transcribe the user's audio message using OpenAI Whisper API for Speech-to-Text.
+    """
     try:
+        # Log the start of the download process
         print(f"Downloading audio from: {audio_url}")
-        audio_response = requests.get(audio_url)
-        if not os.path.exists('static/build/audio'):
-            os.makedirs('static/build/audio')
+        audio_response = requests.get(audio_url, stream=True)
+        
+        if audio_response.status_code != 200:
+            raise Exception(f"Failed to download audio. HTTP Status: {audio_response.status_code}")
+        
+        # Ensure directories exist
+        os.makedirs('static/build/audio', exist_ok=True)
+        os.makedirs('static/build/audio_converted', exist_ok=True)
 
+        # Save the downloaded audio
         audio_path = os.path.join('static/build/audio', "audio.wav")
-
         with open(audio_path, 'wb') as audio_file:
-            audio_file.write(audio_response.content)
+            for chunk in audio_response.iter_content(chunk_size=8192):
+                audio_file.write(chunk)
+        
+        print("Audio downloaded successfully. Path:", audio_path)
 
-        print("Converting audio to WAV format...", audio_path)
-
+        # Convert to WAV format
+        print("Converting audio to WAV format...")
         audio = AudioSegment.from_file(audio_path)
-        if not os.path.exists('static/build/audio_converted'):
-            os.makedirs('static/build/audio_converted')
-
-        wav_path  = os.path.join('static/build/audio_converted', "audio_converted.wav")
-
+        wav_path = os.path.join('static/build/audio_converted', "audio_converted.wav")
         audio.export(wav_path, format="wav")
+        print("Audio converted to WAV format. Path:", wav_path)
 
+        # Send the WAV file to Whisper API for transcription
         print("Sending audio to OpenAI Whisper API...")
+        response = transcribe_audio_whisper(wav_path)  # Assumes this is defined elsewhere and works correctly
 
-        response = transcribe_audio_whisper(wav_path)
-
+        # Extract the transcription result
         transcription = response.get('text', '')
         print(f"Transcription result: {transcription}")
 
         return transcription
 
+    except requests.RequestException as req_err:
+        print(f"Request error: {req_err}")
+        return None
+    except FileNotFoundError as fnf_err:
+        print(f"File error: {fnf_err}")
+        return None
     except Exception as e:
         print(f"Error transcribing audio: {e}")
         return None
