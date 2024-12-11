@@ -258,17 +258,25 @@ async def process_recording(request: Request):
 
 def download_recording_with_retry(recording_url, account_sid, auth_token, max_retries=5, delay=2):
     for attempt in range(max_retries):
-        response = requests.get(recording_url, auth=(account_sid, auth_token))
+        try:
+            # Make the GET request to download the recording
+            response = requests.get(recording_url, auth=(account_sid, auth_token), timeout=10)
 
-        if response.status_code == 200:
-            # Save the recording to a file
-            audio_file_path = "temp_recording.wav"
-            with open(audio_file_path, "wb") as audio_file:
-                audio_file.write(response.content)
-            print(f"Recording downloaded successfully after {attempt + 1} attempt(s).")
-            return audio_file_path
+            # Check if the request was successful
+            if response.status_code == 200:
+                # Save the recording to a file
+                audio_file_path = f"recording_attempt_{attempt + 1}.wav"
+                with open(audio_file_path, "wb") as audio_file:
+                    audio_file.write(response.content)
+                print(f"Recording downloaded successfully after {attempt + 1} attempt(s).")
+                return audio_file_path
 
-        print(f"Attempt {attempt + 1} failed. Recording not yet available. Status code: {response.status_code}")
+            # Print the error and retry
+            print(f"Attempt {attempt + 1} failed. Status code: {response.status_code}. Response: {response.text}")
+
+        except requests.exceptions.RequestException as e:
+            # Handle request exceptions like timeout, connection error
+            print(f"Attempt {attempt + 1} failed due to an exception: {e}")
 
         # Wait before retrying
         time.sleep(delay)
