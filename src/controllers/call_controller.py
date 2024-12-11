@@ -247,14 +247,14 @@ async def process_recording(request: Request):
         twilio_auth_token = TWILIO_AUTH_TOKEN
 
         # Attempt to download the recording with retries
-        audio_file_path = download_recording_with_retry(recording_url, twilio_account_sid, twilio_auth_token, 5, 2)
-        print(audio_file_path)
+        # audio_file_path = download_recording_with_retry(recording_url, twilio_account_sid, twilio_auth_token, 5, 2)
+        # print(audio_file_path)
 
-        if not audio_file_path:
-            response = VoiceResponse()
-            response.say("Sorry, we could not access your response at this time.")
-            response.hangup()
-            return Response(content=str(response), media_type="application/xml")
+        # if not audio_file_path:
+        #     response = VoiceResponse()
+        #     response.say("Sorry, we could not access your response at this time.")
+        #     response.hangup()
+        #     return Response(content=str(response), media_type="application/xml")
 
 def download_recording_with_retry(recording_url, account_sid, auth_token, max_retries=5, delay=2):
     for attempt in range(max_retries):
