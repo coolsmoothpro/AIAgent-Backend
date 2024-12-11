@@ -259,7 +259,7 @@ def process_recording():
         response = VoiceResponse()
         response.say("Please wait while I process your message.")
         user_input = transcribe_audio(recording_url)
-        print(user_input)
+        print('user_input', user_input)
 
         if not recording_url:
             print("Missing required fields: RecordingUrl or CallSid")
@@ -299,16 +299,13 @@ def transcribe_audio(audio_url):
         with open(audio_path, 'wb') as audio_file:
             audio_file.write(audio_response.content)
 
-        print("Converting audio to WAV format...")
+        print("Converting audio to WAV format...", audio_path)
 
         audio = AudioSegment.from_file(audio_path)
         if not os.path.exists('static/build/audio_converted'):
             os.makedirs('static/build/audio_converted')
 
         wav_path  = os.path.join('static/build/audio_converted', "audio_converted.wav")
-
-        if not os.path.exists('static/build/audio_converted'):
-            os.makedirs('static/build/audio_converted')
 
         audio.export(wav_path, format="wav")
 
