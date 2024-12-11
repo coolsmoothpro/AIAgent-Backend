@@ -247,7 +247,7 @@ async def process_recording(request: Request):
         twilio_auth_token = TWILIO_AUTH_TOKEN
 
         # Attempt to download the recording with retries
-        audio_file_path = download_recording_with_retry(recording_url, twilio_account_sid, twilio_auth_token)
+        audio_file_path = download_recording_with_retry(recording_url, twilio_account_sid, twilio_auth_token, 5, 2)
         print(audio_file_path)
 
         if not audio_file_path:
