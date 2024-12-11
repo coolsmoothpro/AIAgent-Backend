@@ -252,10 +252,10 @@ async def incoming_call():
 def process_recording():
     try:
         form_data = request.form
-        print(form_data)
+        # print(form_data)
 
         recording_url = request.form['RecordingUrl']
-
+        print('recording', recording_url)
         response = VoiceResponse()
         response.say("Please wait while I process your message.")
         user_input = transcribe_audio(recording_url)
@@ -314,7 +314,7 @@ def transcribe_audio(audio_url):
 
         print("Sending audio to OpenAI Whisper API...")
 
-        response = transcribe_audio(wav_path)
+        response = transcribe_audio_whisper(wav_path)
 
         transcription = response.get('text', '')
         print(f"Transcription result: {transcription}")
@@ -783,7 +783,7 @@ def generate_prompt(prompt):
         return f"Request failed with status code {response.status_code}: {response.text}"
 
 
-def transcribe_audio(wav_path):
+def transcribe_audio_whisper(wav_path):
     url = "https://api.openai.com/v1/audio/transcriptions"
     
     headers = {
