@@ -196,8 +196,31 @@ def aiagent_call():
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
+@agent.route("/aiwelcome-call", methods=["POST"])
+def aiwelcome_call():
+    data = request.json
 
-@agent.post("/aiwelcome-call")
+    if "phone" in data and "fullname" in data:
+        country_code = re.match(r"\+\d+", data["phone"]).group()
+        to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
+        fullname = data["fullname"]
+
+        try:
+            call = client.calls.create(
+                to=to_number,
+                from_=TWILIO_PHONE_NUMBER,
+                url=f"http://159.223.165.147:5555/api/v1/agent/handle-call"
+            )
+
+            return jsonify({"message": "Call initiated", "call_sid": call.sid})
+        
+        except:
+            return jsonify({"status": "This is a Trial account. You cannot call unverifed phone number!"})
+
+    return jsonify({"message": "Call initiated", "call_sid": call.sid})
+
+
+@agent.post("/handle-call")
 async def incoming_call():
     #form_data = await request.form()
     #twilio_request = TwilioRequest(**form_data)
@@ -249,17 +272,6 @@ def process_recording():
     except requests.exceptions.RequestException as e:
         # Handle request exceptions like timeout, connection error
         print(f"Recording failed due to an exception: {e}")
-
-
-        # Attempt to download the recording with retries
-        # audio_file_path = download_recording_with_retry(recording_url, twilio_account_sid, twilio_auth_token, 5, 2)
-        # print(audio_file_path)
-
-        # if not audio_file_path:
-        #     response = VoiceResponse()
-        #     response.say("Sorry, we could not access your response at this time.")
-        #     response.hangup()
-        #     return Response(content=str(response), media_type="application/xml")
 
 def download_recording_with_retry(recording_url, account_sid, auth_token, max_retries=5, delay=2):
     for attempt in range(max_retries):
