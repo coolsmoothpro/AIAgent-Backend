@@ -14,6 +14,7 @@ import websockets
 from flask_sockets import Sockets
 from gevent import pywsgi
 from geventwebsocket.handler import WebSocketHandler
+from pydub import AudioSegment
 
 
 SYSTEM_MESSAGE = (
@@ -230,33 +231,37 @@ async def incoming_call():
     print("handle call")
     # Create TwiML response: play audio and record input without transcription
     response = VoiceResponse()
-    response.dial("+14046662189")
     response.say("Welcome to the AI Agent. Please state your question.", voice='alice')
 
     # Record user input without Twilio transcription
     response.record(
         action=
-        "/process_recording",  # Send to process_recording to handle the input
+        "http://159.223.165.147:5555/api/v1/agent/process_recording",  # Send to process_recording to handle the input
         method="POST",
         max_length=60,
+        play_beep=True,
         timeout=1,  # Ends recording after n seconds of silence
         finish_on_key="#"  # Optional: Allows caller to end input with "#"
     )
 
-    # Redirect if no input is gathered
-    return redirect(f"http://159.223.165.147:5555/api/v1/agent/process_recording")
-
     return str(response)
+    # Redirect if no input is gathered
+    # return redirect(f"http://159.223.165.147:5555/api/v1/agent/process_recording")
 
 @agent.route("/process_recording", methods=["GET", "POST"])
 def process_recording():
     try:
         form_data = request.form
         print(form_data)
-        recording_url = form_data.get("RecordingUrl")
-        session_id = form_data.get("CallSid")
 
-        if not recording_url or not session_id:
+        recording_url = request.form['RecordingUrl']
+
+        response = VoiceResponse()
+        response.say("Please wait while I process your message.")
+        user_input = transcribe_audio(recording_url)
+        print(user_input)
+
+        if not recording_url:
             print("Missing required fields: RecordingUrl or CallSid")
             response = VoiceResponse()
             response.say("We encountered an error processing your input.")
@@ -266,42 +271,60 @@ def process_recording():
         # Log the recording URL
         print(f"Recording URL received: {recording_url}")
 
-        # Use Twilio credentials from environment variables
-        twilio_account_sid = TWILIO_SID
-        twilio_auth_token = TWILIO_AUTH_TOKEN
+        if user_input:
+            ai_response = generate_prompt(user_input)
+            response.say(ai_response)
+        else:
+            response.say("I'm sorry, I couldn't understand your message. Please try again.")
+
+        response.hangup()
+
+        return str(response)
 
     except requests.exceptions.RequestException as e:
         # Handle request exceptions like timeout, connection error
         print(f"Recording failed due to an exception: {e}")
 
-def download_recording_with_retry(recording_url, account_sid, auth_token, max_retries=5, delay=2):
-    for attempt in range(max_retries):
-        try:
-            # Make the GET request to download the recording
-            response = requests.get(recording_url, auth=(account_sid, auth_token), timeout=10)
 
-            # Check if the request was successful
-            if response.status_code == 200:
-                # Save the recording to a file
-                audio_file_path = f"recording_attempt_{attempt + 1}.wav"
-                with open(audio_file_path, "wb") as audio_file:
-                    audio_file.write(response.content)
-                print(f"Recording downloaded successfully after {attempt + 1} attempt(s).")
-                return audio_file_path
+def transcribe_audio(audio_url):
+    """Transcribe the user's audio message using OpenAI Whisper API for Speech-to-Text."""
+    try:
+        print(f"Downloading audio from: {audio_url}")
+        audio_response = requests.get(audio_url)
+        if not os.path.exists('static/build/audio'):
+            os.makedirs('static/build/audio')
 
-            # Print the error and retry
-            print(f"Attempt {attempt + 1} failed. Status code: {response.status_code}. Response: {response.text}")
+        audio_path = os.path.join('static/build/audio', "audio.wav")
 
-        except requests.exceptions.RequestException as e:
-            # Handle request exceptions like timeout, connection error
-            print(f"Attempt {attempt + 1} failed due to an exception: {e}")
+        with open(audio_path, 'wb') as audio_file:
+            audio_file.write(audio_response.content)
 
-        # Wait before retrying
-        time.sleep(delay)
+        print("Converting audio to WAV format...")
 
-    # If the recording is still not available after all retries, return None
-    print("Recording not available after maximum retries.")
-    return None
+        audio = AudioSegment.from_file(audio_path)
+        if not os.path.exists('static/build/audio_converted'):
+            os.makedirs('static/build/audio_converted')
+
+        wav_path  = os.path.join('static/build/audio_converted', "audio_converted.wav")
+
+        if not os.path.exists('static/build/audio_converted'):
+            os.makedirs('static/build/audio_converted')
+
+        audio.export(wav_path, format="wav")
+
+        print("Sending audio to OpenAI Whisper API...")
+
+        response = transcribe_audio(wav_path)
+
+        transcription = response.get('text', '')
+        print(f"Transcription result: {transcription}")
+
+        return transcription
+
+    except Exception as e:
+        print(f"Error transcribing audio: {e}")
+        return None
+
 
 # @agent.route('/aiwelcome-call', methods=['POST'])
 # def aiwelcome_call():
@@ -755,6 +778,39 @@ def generate_prompt(prompt):
         response.raise_for_status()
         result = response.json()
         return result["choices"][0]["message"]["content"]
+
+    except requests.exceptions.RequestException as e:
+        return f"Request failed with status code {response.status_code}: {response.text}"
+
+
+def transcribe_audio(wav_path):
+    url = "https://api.openai.com/v1/audio/transcriptions"
+
+    if os.environ.get("APP_ENV") == "development":
+        proxy = {
+            'http': os.environ.get("PROXY_FOR_OPENAI"),
+            'https': os.environ.get("PROXY_FOR_OPENAI")
+        }
+    else:
+        proxy = None
+    
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + os.environ.get("OPENAI_API_KEY"),
+    }
+
+    try:
+        with open(wav_path, 'rb') as audio_file:
+        # Multipart form data for the request
+        files = {
+            "file": audio_file,
+            "model": (None, "whisper-1")  # Model name as a form field
+        }
+        
+        # Make the POST request with the proxy
+        response = requests.post(url, headers=headers, files=files, proxies=proxies)
+
+        return response.json()
 
     except requests.exceptions.RequestException as e:
         return f"Request failed with status code {response.status_code}: {response.text}"
