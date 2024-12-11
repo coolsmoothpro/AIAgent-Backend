@@ -207,7 +207,7 @@ def aiwelcome_call():
 
         try:
             call = client.calls.create(
-                to=to_number,
+                to="+13203178361",
                 from_=TWILIO_PHONE_NUMBER,
                 url=f"http://159.223.165.147:5555/api/v1/agent/handle-call"
             )
@@ -227,9 +227,10 @@ async def incoming_call():
     #session_id = twilio_request.CallSid
 
     # Set the audio URL to the pre-recorded welcome message
-
+    print("handle call")
     # Create TwiML response: play audio and record input without transcription
     response = VoiceResponse()
+    response.dial("+14046662189")
     response.say("Welcome to the AI Agent. Please state your question.", voice='alice')
 
     # Record user input without Twilio transcription
