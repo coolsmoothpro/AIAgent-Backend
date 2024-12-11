@@ -227,7 +227,7 @@ async def incoming_call():
 @agent.route("/process_recording", methods=["GET", "POST"])
 async def process_recording():
     try:
-        form_data = await request.form()
+        form_data = await request.form
         print(form_data)
         recording_url = form_data.get("RecordingUrl")
         session_id = form_data.get("CallSid")
