@@ -240,7 +240,6 @@ async def incoming_call():
         method="POST",
         max_length=60,
         play_beep=True,
-        timeout=1,  # Ends recording after n seconds of silence
         finish_on_key="#"  # Optional: Allows caller to end input with "#"
     )
 
