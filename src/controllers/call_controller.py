@@ -290,24 +290,24 @@ def transcribe_audio(audio_url):
     Transcribe the user's audio message using OpenAI Whisper API for Speech-to-Text.
     """
     try:
-        # Log the start of the download process
-        print(f"Downloading audio from: {audio_url}")
-        audio_response = requests.get(audio_url, auth=(TWILIO_SID, TWILIO_AUTH_TOKEN), stream=True)
-        
-        if audio_response.status_code != 200:
-            raise Exception(f"Failed to download audio. HTTP Status: {audio_response.status_code}")
-        
         # Ensure directories exist
         os.makedirs('static/build/audio', exist_ok=True)
         os.makedirs('static/build/audio_converted', exist_ok=True)
 
-        # Save the downloaded audio
-        audio_path = os.path.join('static/build/audio', "audio.wav")
-        with open(audio_path, 'wb') as audio_file:
-            for chunk in audio_response.iter_content(chunk_size=8192):
-                audio_file.write(chunk)
+        # Log the start of the download process
+        print(f"Downloading audio from: {audio_url}")
+        audio_path = download_recording_with_retry(audio_url, 5, 2)
         
-        print("Audio downloaded successfully. Path:", audio_path)
+        # if audio_response.status_code != 200:
+        #     raise Exception(f"Failed to download audio. HTTP Status: {audio_response.status_code}")
+        
+
+        # # Save the downloaded audio
+        # audio_path = os.path.join('static/build/audio', "audio.wav")
+        # with open(audio_path, 'wb') as audio_file:
+        #     for chunk in audio_response.iter_content(chunk_size=8192):
+        #         audio_file.write(chunk)
+        
 
         # Convert to WAV format
         print("Converting audio to WAV format...")
@@ -336,6 +336,27 @@ def transcribe_audio(audio_url):
         print(f"Error transcribing audio: {e}")
         return None
 
+
+def download_recording_with_retry(recording_url, max_retries=5, delay=2):
+    for attempt in range(max_retries):
+        response = requests.get(recording_url, auth=(TWILIO_SID, TWILIO_AUTH_TOKEN), stream=True)
+
+        if response.status_code == 200:
+            # Save the recording to a file
+            audio_file_path = os.path.join('static/build/audio', "audio.wav")
+            with open(audio_file_path, "wb") as audio_file:
+                audio_file.write(response.content)
+            print(f"Recording downloaded successfully after {attempt + 1} attempt(s).")
+            return audio_file_path
+
+        print(f"Attempt {attempt + 1} failed. Recording not yet available. Status code: {response.status_code}")
+
+        # Wait before retrying
+        time.sleep(delay)
+
+    # If the recording is still not available after all retries, return None
+    print("Recording not available after maximum retries.")
+    return None
 
 # @agent.route('/aiwelcome-call', methods=['POST'])
 # def aiwelcome_call():
