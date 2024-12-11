@@ -246,6 +246,11 @@ async def process_recording(request: Request):
         twilio_account_sid = TWILIO_SID
         twilio_auth_token = TWILIO_AUTH_TOKEN
 
+    except requests.exceptions.RequestException as e:
+        # Handle request exceptions like timeout, connection error
+        print(f"Recording failed due to an exception: {e}")
+
+
         # Attempt to download the recording with retries
         # audio_file_path = download_recording_with_retry(recording_url, twilio_account_sid, twilio_auth_token, 5, 2)
         # print(audio_file_path)
@@ -256,34 +261,34 @@ async def process_recording(request: Request):
         #     response.hangup()
         #     return Response(content=str(response), media_type="application/xml")
 
-# def download_recording_with_retry(recording_url, account_sid, auth_token, max_retries=5, delay=2):
-#     for attempt in range(max_retries):
-#         try:
-#             # Make the GET request to download the recording
-#             response = requests.get(recording_url, auth=(account_sid, auth_token), timeout=10)
+def download_recording_with_retry(recording_url, account_sid, auth_token, max_retries=5, delay=2):
+    for attempt in range(max_retries):
+        try:
+            # Make the GET request to download the recording
+            response = requests.get(recording_url, auth=(account_sid, auth_token), timeout=10)
 
-#             # Check if the request was successful
-#             if response.status_code == 200:
-#                 # Save the recording to a file
-#                 audio_file_path = f"recording_attempt_{attempt + 1}.wav"
-#                 with open(audio_file_path, "wb") as audio_file:
-#                     audio_file.write(response.content)
-#                 print(f"Recording downloaded successfully after {attempt + 1} attempt(s).")
-#                 return audio_file_path
+            # Check if the request was successful
+            if response.status_code == 200:
+                # Save the recording to a file
+                audio_file_path = f"recording_attempt_{attempt + 1}.wav"
+                with open(audio_file_path, "wb") as audio_file:
+                    audio_file.write(response.content)
+                print(f"Recording downloaded successfully after {attempt + 1} attempt(s).")
+                return audio_file_path
 
-#             # Print the error and retry
-#             print(f"Attempt {attempt + 1} failed. Status code: {response.status_code}. Response: {response.text}")
+            # Print the error and retry
+            print(f"Attempt {attempt + 1} failed. Status code: {response.status_code}. Response: {response.text}")
 
-#         except requests.exceptions.RequestException as e:
-#             # Handle request exceptions like timeout, connection error
-#             print(f"Attempt {attempt + 1} failed due to an exception: {e}")
+        except requests.exceptions.RequestException as e:
+            # Handle request exceptions like timeout, connection error
+            print(f"Attempt {attempt + 1} failed due to an exception: {e}")
 
-#         # Wait before retrying
-#         time.sleep(delay)
+        # Wait before retrying
+        time.sleep(delay)
 
-#     # If the recording is still not available after all retries, return None
-#     print("Recording not available after maximum retries.")
-#     return None
+    # If the recording is still not available after all retries, return None
+    print("Recording not available after maximum retries.")
+    return None
 
 # @agent.route('/aiwelcome-call', methods=['POST'])
 # def aiwelcome_call():
