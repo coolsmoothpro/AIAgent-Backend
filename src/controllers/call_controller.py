@@ -238,7 +238,7 @@ async def incoming_call():
         action=
         "http://159.223.165.147:5555/api/v1/agent/process_recording",  # Send to process_recording to handle the input
         method="POST",
-        max_length=60,
+        max_length=30,
         play_beep=True,
         finish_on_key="#"  # Optional: Allows caller to end input with "#"
     )
