@@ -196,28 +196,110 @@ def aiagent_call():
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
-@agent.route('/aiwelcome-call', methods=['POST'])
-def aiwelcome_call():
-    data = request.json
 
-    if "phone" in data and "fullname" in data:
-        country_code = re.match(r"\+\d+", data["phone"]).group()
-        to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
-        fullname = data["fullname"]
+@agent.post("/aiwelcome-call")
+async def incoming_call(request: Request):
+    #form_data = await request.form()
+    #twilio_request = TwilioRequest(**form_data)
+    #session_id = twilio_request.CallSid
 
-        try:
-            call = client.calls.create(
-                to=to_number,
-                from_=TWILIO_PHONE_NUMBER,
-                url=f"http://159.223.165.147:5555/api/v1/agent/voice"
-            )
+    # Set the audio URL to the pre-recorded welcome message
+    response.say("Welcome to the AI Agent. Please state your question.", voice='alice')
 
-            return jsonify({"message": "Call initiated", "call_sid": call.sid})
+    # Create TwiML response: play audio and record input without transcription
+    response = VoiceResponse()
+    response.play(audio_url)
+
+    # Record user input without Twilio transcription
+    response.record(
+        action=
+        "/process_recording",  # Send to process_recording to handle the input
+        method="POST",
+        max_length=60,
+        timeout=1,  # Ends recording after n seconds of silence
+        finish_on_key="#"  # Optional: Allows caller to end input with "#"
+    )
+
+    # Redirect if no input is gathered
+    response.redirect("/process_recording")
+
+    return Response(content=str(response), media_type="application/xml")
+
+@agent.post("/process_recording")
+async def process_recording(request: Request):
+    try:
+        form_data = await request.form()
+
+        recording_url = form_data.get("RecordingUrl")
+        session_id = form_data.get("CallSid")
+
+        if not recording_url or not session_id:
+            print("Missing required fields: RecordingUrl or CallSid")
+            response = VoiceResponse()
+            response.say("We encountered an error processing your input.")
+            response.hangup()
+            return Response(content=str(response), media_type="application/xml")
+
+        # Log the recording URL
+        print(f"Recording URL received: {recording_url}")
+
+        # Use Twilio credentials from environment variables
+        twilio_account_sid = TWILIO_SID
+        twilio_auth_token = TWILIO_AUTH_TOKEN
+
+        # Attempt to download the recording with retries
+        audio_file_path = download_recording_with_retry(recording_url, twilio_account_sid, twilio_auth_token)
+        print(audio_file_path)
         
-        except:
-            return jsonify({"status": "This is a Trial account. You cannot call unverifed phone number!"})
+        if not audio_file_path:
+            response = VoiceResponse()
+            response.say("Sorry, we could not access your response at this time.")
+            response.hangup()
+            return Response(content=str(response), media_type="application/xml")
 
-    return jsonify({"message": "Call initiated", "call_sid": call.sid})
+def download_recording_with_retry(recording_url, account_sid, auth_token, max_retries=5, delay=2):
+    for attempt in range(max_retries):
+        response = requests.get(recording_url, auth=(account_sid, auth_token))
+
+        if response.status_code == 200:
+            # Save the recording to a file
+            audio_file_path = "temp_recording.wav"
+            with open(audio_file_path, "wb") as audio_file:
+                audio_file.write(response.content)
+            print(f"Recording downloaded successfully after {attempt + 1} attempt(s).")
+            return audio_file_path
+
+        print(f"Attempt {attempt + 1} failed. Recording not yet available. Status code: {response.status_code}")
+
+        # Wait before retrying
+        time.sleep(delay)
+
+    # If the recording is still not available after all retries, return None
+    print("Recording not available after maximum retries.")
+    return None
+
+# @agent.route('/aiwelcome-call', methods=['POST'])
+# def aiwelcome_call():
+#     data = request.json
+
+#     if "phone" in data and "fullname" in data:
+#         country_code = re.match(r"\+\d+", data["phone"]).group()
+#         to_number = country_code  + re.sub(r"\D", "", data["phone"][len(country_code):])
+#         fullname = data["fullname"]
+
+#         try:
+#             call = client.calls.create(
+#                 to=to_number,
+#                 from_=TWILIO_PHONE_NUMBER,
+#                 url=f"http://159.223.165.147:5555/api/v1/agent/voice"
+#             )
+
+#             return jsonify({"message": "Call initiated", "call_sid": call.sid})
+        
+#         except:
+#             return jsonify({"status": "This is a Trial account. You cannot call unverifed phone number!"})
+
+#     return jsonify({"message": "Call initiated", "call_sid": call.sid})
 
 
 @agent.route("/voice", methods=["GET", "POST"])
