@@ -785,14 +785,6 @@ def generate_prompt(prompt):
 
 def transcribe_audio(wav_path):
     url = "https://api.openai.com/v1/audio/transcriptions"
-
-    if os.environ.get("APP_ENV") == "development":
-        proxy = {
-            'http': os.environ.get("PROXY_FOR_OPENAI"),
-            'https': os.environ.get("PROXY_FOR_OPENAI")
-        }
-    else:
-        proxy = None
     
     headers = {
         "Content-Type": "application/json",
@@ -808,7 +800,7 @@ def transcribe_audio(wav_path):
             }
         
             # Make the POST request with the proxy
-            response = requests.post(url, headers=headers, files=files, proxies=proxies)
+            response = requests.post(url, headers=headers, files=files)
 
         return response.json()
 
