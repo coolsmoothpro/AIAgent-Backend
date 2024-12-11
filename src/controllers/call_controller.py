@@ -220,7 +220,7 @@ async def incoming_call():
     )
 
     # Redirect if no input is gathered
-    response.redirect("/process_recording")
+    return redirect(f"http://159.223.165.147:5555/api/v1/agent/process_recording")
 
     return str(response)
 
