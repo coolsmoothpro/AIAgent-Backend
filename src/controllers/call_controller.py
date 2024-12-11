@@ -196,7 +196,7 @@ def aiagent_call():
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
-@agent.route("/aiwelcome-call", methods=["POST"])
+@agent.route("/aiwelcomea-call", methods=["POST"])
 def aiwelcome_call():
     data = request.json
 
@@ -220,7 +220,7 @@ def aiwelcome_call():
     return jsonify({"message": "Call initiated", "call_sid": call.sid})
 
 
-@agent.post("/handle-call")
+@agent.post("/aiwelcome-call")
 async def incoming_call():
     #form_data = await request.form()
     #twilio_request = TwilioRequest(**form_data)
