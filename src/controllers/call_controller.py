@@ -818,26 +818,31 @@ def generate_prompt(prompt):
 def transcribe_audio_whisper(wav_path):
     url = "https://api.openai.com/v1/audio/transcriptions"
     
+    # Only include Authorization in the headers; Content-Type is set automatically for multipart form-data.
     headers = {
-        "Content-Type": "application/json",
         "Authorization": "Bearer " + os.environ.get("OPENAI_API_KEY"),
     }
 
     try:
         with open(wav_path, 'rb') as audio_file:
-            # Multipart form data for the request
+            # Prepare the multipart form-data
             files = {
-                "file": audio_file,
-                "model": (None, "whisper-1")  # Model name as a form field
+                "file": audio_file,  # The binary audio file
+                "model": (None, "whisper-1"),  # Model name
             }
-        
-            # Make the POST request with the proxy
+            
+            # Make the POST request
             response = requests.post(url, headers=headers, files=files)
+            
+            # Check for errors
+            if response.status_code != 200:
+                return f"Request failed with status code {response.status_code}: {response.text}"
 
-        return response.json()
+            # Return the response as JSON
+            return response.json()
 
     except requests.exceptions.RequestException as e:
-        return f"Request failed with status code {response.status_code}: {response.text}"
+        return f"An exception occurred: {str(e)}"
 
 
 if __name__ == "__main__":
