@@ -293,7 +293,7 @@ def transcribe_audio(audio_url):
     try:
         # Log the start of the download process
         print(f"Downloading audio from: {audio_url}")
-        audio_response = requests.get(audio_url, stream=True)
+        audio_response = requests.get(audio_url, auth=(TWILIO_SID, TWILIO_AUTH_TOKEN), stream=True)
         
         if audio_response.status_code != 200:
             raise Exception(f"Failed to download audio. HTTP Status: {audio_response.status_code}")
