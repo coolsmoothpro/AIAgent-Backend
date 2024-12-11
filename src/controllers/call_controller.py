@@ -222,7 +222,7 @@ async def incoming_call():
     # Redirect if no input is gathered
     response.redirect("/process_recording")
 
-    return Response(content=str(response), media_type="application/xml")
+    return str(response)
 
 @agent.post("/process_recording")
 async def process_recording():
@@ -237,7 +237,7 @@ async def process_recording():
             response = VoiceResponse()
             response.say("We encountered an error processing your input.")
             response.hangup()
-            return Response(content=str(response), media_type="application/xml")
+            return str(response)
 
         # Log the recording URL
         print(f"Recording URL received: {recording_url}")
