@@ -204,11 +204,10 @@ async def incoming_call(request: Request):
     #session_id = twilio_request.CallSid
 
     # Set the audio URL to the pre-recorded welcome message
-    response.say("Welcome to the AI Agent. Please state your question.", voice='alice')
 
     # Create TwiML response: play audio and record input without transcription
     response = VoiceResponse()
-    response.play(audio_url)
+    response.say("Welcome to the AI Agent. Please state your question.", voice='alice')
 
     # Record user input without Twilio transcription
     response.record(
@@ -229,7 +228,7 @@ async def incoming_call(request: Request):
 async def process_recording(request: Request):
     try:
         form_data = await request.form()
-
+        print(form_data)
         recording_url = form_data.get("RecordingUrl")
         session_id = form_data.get("CallSid")
 
@@ -250,7 +249,7 @@ async def process_recording(request: Request):
         # Attempt to download the recording with retries
         audio_file_path = download_recording_with_retry(recording_url, twilio_account_sid, twilio_auth_token)
         print(audio_file_path)
-        
+
         if not audio_file_path:
             response = VoiceResponse()
             response.say("Sorry, we could not access your response at this time.")
