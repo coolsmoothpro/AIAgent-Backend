@@ -319,7 +319,7 @@ def transcribe_audio(audio_url):
         # Send the WAV file to Whisper API for transcription
         print("Sending audio to OpenAI Whisper API...")
         response = transcribe_audio_whisper(wav_path)  # Assumes this is defined elsewhere and works correctly
-
+        print('transcribe_audio_whisper', response)
         # Extract the transcription result
         transcription = response.get('text', '')
         print(f"Transcription result: {transcription}")
