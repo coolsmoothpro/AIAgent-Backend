@@ -224,7 +224,7 @@ async def incoming_call():
 
     return str(response)
 
-@agent.post("/process_recording")
+@agent.route("/process_recording", methods=["GET", "POST"])
 async def process_recording():
     try:
         form_data = await request.form()
