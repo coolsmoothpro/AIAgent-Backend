@@ -238,9 +238,10 @@ async def incoming_call():
         action=
         "http://159.223.165.147:5555/api/v1/agent/process_recording",  # Send to process_recording to handle the input
         method="POST",
-        max_length=30,
-        play_beep=True,
-        finish_on_key="#"  # Optional: Allows caller to end input with "#"
+        # max_length=30,
+        # play_beep=True,
+        timeout=1,
+        finish_on_key="q"  # Optional: Allows caller to end input with "#"
     )
 
     return str(response)
@@ -272,6 +273,7 @@ def process_recording():
 
         if user_input:
             ai_response = generate_prompt(user_input)
+            print('ai_response', ai_response)
             response.say(ai_response)
         else:
             response.say("I'm sorry, I couldn't understand your message. Please try again.")
