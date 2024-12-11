@@ -69,17 +69,17 @@ sockets = Sockets(current_app)
 
 
 # Route to receive incoming calls
-@agent.route("/incoming-call", methods=["POST"])
-def incoming_call():
-    print("incoming call")
-    response = VoiceResponse()
+# @agent.route("/incoming-call", methods=["POST"])
+# def incoming_call():
+#     print("incoming call")
+#     response = VoiceResponse()
 
-    response.say("Thank you for calling. Please wait while we connect you to an agent.", voice='alice')
+#     response.say("Thank you for calling. Please wait while we connect you to an agent.", voice='alice')
 
-    # Transfer to live agent (e.g., an agent's number or conference room)
-    response.dial("+19032184512")  # Replace with live agent's phone number or conference room
+#     # Transfer to live agent (e.g., an agent's number or conference room)
+#     response.dial("+19032184512")  # Replace with live agent's phone number or conference room
 
-    return str(response)
+#     return str(response)
 
 def generate_audio_with_deepgram(prompt):
     headers = {
