@@ -275,6 +275,8 @@ def process_recording():
             ai_response = generate_prompt(user_input)
             print('ai_response', ai_response)
             response.say(ai_response)
+            response.pause(length=2)
+            response.say("Thanks for your asking, Good bye!")
         else:
             response.say("I'm sorry, I couldn't understand your message. Please try again.")
 
