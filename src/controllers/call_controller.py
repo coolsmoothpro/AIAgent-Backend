@@ -832,7 +832,8 @@ def transcribe_audio_whisper(wav_path):
             # Prepare the multipart form-data
             files = {
                 "file": audio_file,  # The binary audio file
-                "model": (None, "whisper-1"),  # Model name
+                "model": (None, "whisper-1"),  # Model name,
+                "language": (None, "en")
             }
             
             # Make the POST request
